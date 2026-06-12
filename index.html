@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cobo Fiat — 设计方案与原型</title>
+<title>cobo fiat in/out — 设计方案与原型</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Oxanium:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ============ TOKEN SYSTEM ============ */
@@ -461,7 +461,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
 <!-- ============ TOP SWITCHER ============ -->
 <div class="topbar">
-  <div class="tb-logo"><span class="mk">C</span> Cobo Fiat</div>
+  <div class="tb-logo"><span class="mk">C</span> cobo fiat in/out</div>
   <div class="tb-switch">
     <div class="tb-tab active" onclick="switchView('doc',this)">设计方案</div>
     <div class="tb-tab" onclick="switchView('proto',this)">交互原型</div>
@@ -476,17 +476,17 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- HERO -->
     <div class="doc-hero">
-      <div class="doc-eyebrow">PRODUCT DESIGN · COBO FIAT</div>
-      <div class="doc-h1">Cobo Fiat 法币操作中枢</div>
+      <div class="doc-eyebrow">PRODUCT DESIGN · cobo fiat in/out</div>
+      <div class="doc-h1">cobo fiat in/out 法币操作中枢</div>
       <div class="doc-lead">以法币操作为核心的资金工作台。客户在 Cobo 体系内持有的稳定币与法币余额，可以统一管理、按需转化，并通过两条独立路径完成提现与下发。本方案说明产品定位、资金来源、余额模型与出口逻辑，后续「交互原型」是这套思路的可视化呈现。</div>
     </div>
 
     <!-- 1 POSITIONING -->
     <div class="doc-section">
       <div class="doc-sec-num">01 / 产品定位</div>
-      <div class="doc-h2">Cobo Fiat 是什么</div>
+      <div class="doc-h2">cobo fiat in/out 是什么</div>
       <div class="doc-h2-sub">不是一个换汇工具，而是一个带稳定币入口的法币账户与结算工作台。</div>
-      <div class="doc-p">Cobo 已经具备数字货币侧的基础——Portal、托管钱包、稳定币收单、Off-ramp Core 都已跑通。Cobo Fiat 要补齐的是<strong>法币侧的操作能力</strong>：让客户不仅能把稳定币换成法币，更能像使用一个真正的法币账户一样，收款、持有、提现、下发。</div>
+      <div class="doc-p">Cobo 已经具备数字货币侧的基础——Portal、托管钱包、稳定币收单、Off-ramp Core 都已跑通。cobo fiat in/out 要补齐的是<strong>法币侧的操作能力</strong>：让客户不仅能把稳定币换成法币，更能像使用一个真正的法币账户一样，收款、持有、提现、下发。</div>
       <div class="pos-grid">
         <div class="pos-card">
           <span class="pc-tag" style="background:var(--brand-10);color:var(--brand);">已具备</span>
@@ -640,8 +640,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
         <div class="src-row">
           <div class="src-badge" style="background:var(--brand-10);color:var(--brand);">直接<br>换汇</div>
           <div class="src-info">
-            <div class="src-name">Cobo Fiat 内直接换汇</div>
-            <div class="src-desc">客户持有的稳定币，在 Cobo Fiat 内直接 off-ramp 成法币。需 KYT 验证币的来源。</div>
+            <div class="src-name">cobo fiat in/out 内直接换汇</div>
+            <div class="src-desc">客户持有的稳定币，在 cobo fiat in/out 内直接 off-ramp 成法币。需 KYT 验证币的来源。</div>
           </div>
           <span class="src-meta" style="background:var(--tg-grey-b);color:var(--tg-grey-t);">视 KYT 结果</span>
         </div>
@@ -674,7 +674,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           <tbody>
             <tr><td class="name">On-ramp LP 收款</td><td class="chk">✓</td><td class="chk">✓</td></tr>
             <tr><td class="name">Payment 收单转化</td><td class="chk">✓</td><td class="chk">✓ <span style="font-size:11px;color:var(--t-secondary);">(KYT 完成)</span></td></tr>
-            <tr><td class="name">Cobo Fiat 直接换汇</td><td class="chk">✓</td><td class="cond">视 KYT 结果</td></tr>
+            <tr><td class="name">cobo fiat in/out 直接换汇</td><td class="chk">✓</td><td class="cond">视 KYT 结果</td></tr>
             <tr><td class="name" style="color:var(--alert);">VA 直接充值</td><td class="cond">牌照前不开放</td><td class="cond">牌照前不开放</td></tr>
           </tbody>
         </table>
@@ -752,7 +752,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           <g font-size="12" font-weight="500">
             <rect x="30" y="46" width="180" height="40" rx="6" fill="#E4F5EB"/><text x="120" y="71" text-anchor="middle" fill="#067647">On-ramp LP 收款</text>
             <rect x="30" y="94" width="180" height="40" rx="6" fill="#EFF8FF"/><text x="120" y="119" text-anchor="middle" fill="#175CD3">Payment 收单转化</text>
-            <rect x="30" y="142" width="180" height="40" rx="6" fill="rgba(31,50,214,.1)"/><text x="120" y="167" text-anchor="middle" fill="#1F32D6">Cobo Fiat 直接换汇</text>
+            <rect x="30" y="142" width="180" height="40" rx="6" fill="rgba(31,50,214,.1)"/><text x="120" y="167" text-anchor="middle" fill="#1F32D6">cobo fiat in/out 直接换汇</text>
             <rect x="30" y="190" width="180" height="40" rx="6" fill="#FFF0F1" stroke="#E74E5A" stroke-width="1" stroke-dasharray="4 3"/><text x="120" y="215" text-anchor="middle" fill="#E74E5A">VA 直接充值（需牌照）</text>
           </g>
           <!-- arrows to pool -->
@@ -1316,7 +1316,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
       </div>
       <div data-step="w3">
         <div class="sumbox">
-          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat · USD 余额</span></div>
+          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">cobo fiat in/out · USD 余额</span></div>
           <div class="sumrow"><span class="sumk">目标账户</span><span class="sumv">Citibank (US) · ****1234<span class="sub">XYZ Trading Ltd</span></span></div>
           <div class="sumrow"><span class="sumk">提现金额</span><span class="sumv amt">USD 100,000.00</span></div>
           <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 50.00</span></div>
@@ -1391,7 +1391,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
       <div data-step="p3">
         <div class="sumbox">
           <div class="sumrow"><span class="sumk">代表商户</span><span class="sumv">商户 A · Lazada-VN<span class="sub">子账本将扣减 USD 50,000</span></span></div>
-          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat · USD 余额（商户 A 归属）</span></div>
+          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">cobo fiat in/out · USD 余额（商户 A 归属）</span></div>
           <div class="sumrow"><span class="sumk">收款方</span><span class="sumv">供应商 X 物流<span class="sub">越南银行 · ****8821</span></span></div>
           <div class="sumrow"><span class="sumk">下发金额</span><span class="sumv amt">USD 50,000.00</span></div>
           <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 80.00</span></div>
@@ -1496,7 +1496,7 @@ function buildMarkdown(){
     if(lead)parts.push(cleanText(lead));
   }
   [...doc.querySelectorAll(':scope > .doc-section')].forEach(sec=>parts.push(sectionToMarkdown(sec)));
-  parts.push('\n---\n\n_由 Cobo Fiat 原型页面导出。_');
+  parts.push('\n---\n\n_由 cobo fiat in/out 原型页面导出。_');
   return parts.filter(Boolean).join('\n\n');
 }
 function showMdPanel(md, filename, message){
