@@ -45,6 +45,9 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 .tb-tab{padding:7px 18px;border-radius:6px;font-size:14px;font-weight:500;color:var(--t-secondary);cursor:pointer;transition:all .15s;}
 .tb-tab.active{background:var(--bg-main);color:var(--brand);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.06);}
 
+.tb-download{margin-left:auto;height:32px;padding:0 14px;border-radius:6px;border:1px solid var(--brand);background:var(--bg-main);color:var(--brand);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.tb-download:hover{background:var(--brand-10);}
+
 [data-view]{display:none;}
 [data-view].active{display:block;}
 
@@ -463,6 +466,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
     <div class="tb-tab active" onclick="switchView('doc',this)">设计方案</div>
     <div class="tb-tab" onclick="switchView('proto',this)">交互原型</div>
   </div>
+  <button class="tb-download" onclick="downloadMarkdown()">下载 MD</button>
+  <button class="tb-download" style="margin-left:8px;" onclick="copyMarkdownFallback()">复制 MD</button>
 </div>
 
 <!-- ============ VIEW 1: DESIGN DOC ============ -->
@@ -1440,6 +1445,130 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 </div>
 
 <script>
+
+/* ===== Markdown export ===== */
+function mdEscapePipe(s){return s.replace(/\|/g,'\\|').trim();}
+function cleanText(el){return (el.innerText||el.textContent||'').replace(/\u00a0/g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();}
+function tableToMarkdown(table){
+  const rows=[...table.querySelectorAll('tr')].map(tr=>[...tr.children].map(c=>mdEscapePipe(cleanText(c))));
+  if(!rows.length)return '';
+  const head=rows[0];
+  const sep=head.map(()=> '---');
+  const body=rows.slice(1);
+  return ['| '+head.join(' | ')+' |','| '+sep.join(' | ')+' |',...body.map(r=>'| '+r.join(' | ')+' |')].join('\n');
+}
+function cardToBullets(el){
+  const lines=cleanText(el).split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!lines.length)return '';
+  const title=lines[0];
+  const rest=lines.slice(1).map(s=>'  - '+s).join('\n');
+  return '- '+title+(rest?'\n'+rest:'');
+}
+function sectionToMarkdown(section){
+  let out=[];
+  const direct=[...section.children];
+  direct.forEach(el=>{
+    if(el.classList.contains('doc-sec-num')) out.push('---\n\n**'+cleanText(el)+'**');
+    else if(el.classList.contains('doc-h2')) out.push('## '+cleanText(el));
+    else if(el.classList.contains('doc-h2-sub')) out.push('_'+cleanText(el)+'_');
+    else if(el.classList.contains('doc-p')) out.push(cleanText(el));
+    else if(el.classList.contains('callout') || el.classList.contains('principle')) out.push(cleanText(el).split('\n').map(l=>'> '+l).join('\n'));
+    else if(el.classList.contains('eq-box') || el.classList.contains('eq-hard')) out.push('```text\n'+cleanText(el)+'\n```');
+    else if(el.querySelector('table')) out.push(tableToMarkdown(el.querySelector('table')));
+    else if(el.classList.contains('pos-grid') || el.classList.contains('ent-grid') || el.classList.contains('exit-grid')) out.push([...el.children].map(cardToBullets).join('\n'));
+    else if(el.classList.contains('srcmap')) out.push([...el.querySelectorAll('.src-row')].map(cardToBullets).join('\n'));
+    else if(el.classList.contains('layer-card')) out.push(cardToBullets(el));
+    else if(el.classList.contains('flow-wrap')) out.push('> 此处为原型中的流程图，可在 HTML 原型中查看完整可视化链路。');
+    else if(cleanText(el)) out.push(cleanText(el));
+  });
+  return out.filter(Boolean).join('\n\n');
+}
+function buildMarkdown(){
+  const doc=document.querySelector('.doc');
+  const parts=[];
+  const hero=doc.querySelector('.doc-hero');
+  if(hero){
+    const eyebrow=hero.querySelector('.doc-eyebrow');
+    const h1=hero.querySelector('.doc-h1');
+    const lead=hero.querySelector('.doc-lead');
+    if(eyebrow)parts.push('<!-- '+cleanText(eyebrow)+' -->');
+    if(h1)parts.push('# '+cleanText(h1));
+    if(lead)parts.push(cleanText(lead));
+  }
+  [...doc.querySelectorAll(':scope > .doc-section')].forEach(sec=>parts.push(sectionToMarkdown(sec)));
+  parts.push('\n---\n\n_由 Cobo Fiat 原型页面导出。_');
+  return parts.filter(Boolean).join('\n\n');
+}
+function showMdPanel(md, filename, message){
+  let ov=document.getElementById('mdFallbackOverlay');
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='mdFallbackOverlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(28,28,28,.45);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;';
+    ov.innerHTML=`<div style="background:#fff;border-radius:10px;width:min(760px,96vw);max-height:86vh;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.18);">
+      <div style="padding:20px 24px;border-bottom:1px solid #EDEEF3;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div><div style="font-size:18px;font-weight:600;">Markdown 已生成</div><div id="mdFallbackMsg" style="font-size:13px;color:#73798B;margin-top:4px;"></div></div>
+        <button onclick="document.getElementById('mdFallbackOverlay').style.display='none'" style="border:none;background:transparent;font-size:20px;cursor:pointer;color:#73798B;">×</button>
+      </div>
+      <div style="padding:16px 24px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button id="mdCopyBtn" style="height:36px;padding:0 16px;border:none;border-radius:6px;background:#1F32D6;color:white;font-weight:600;cursor:pointer;">复制 Markdown</button>
+        <button id="mdDataBtn" style="height:36px;padding:0 16px;border:1px solid #1F32D6;border-radius:6px;background:white;color:#1F32D6;font-weight:600;cursor:pointer;">在新标签页打开</button>
+        <span style="font-size:12px;color:#73798B;align-self:center;">文件名：<span id="mdFallbackFilename"></span></span>
+      </div>
+      <textarea id="mdFallbackText" readonly style="margin:0 24px 24px;height:46vh;resize:vertical;border:1px solid #EDEEF3;border-radius:6px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.55;white-space:pre;"></textarea>
+    </div>`;
+    document.body.appendChild(ov);
+  }
+  document.getElementById('mdFallbackMsg').textContent=message||'如果浏览器没有开始下载，可复制下面内容并保存为 .md 文件。';
+  document.getElementById('mdFallbackFilename').textContent=filename;
+  const ta=document.getElementById('mdFallbackText');
+  ta.value=md;
+  document.getElementById('mdCopyBtn').onclick=async()=>{
+    try{await navigator.clipboard.writeText(md); document.getElementById('mdCopyBtn').textContent='已复制 ✓';}
+    catch(e){ta.focus();ta.select();document.execCommand('copy');document.getElementById('mdCopyBtn').textContent='已选中，请复制';}
+  };
+  document.getElementById('mdDataBtn').onclick=()=>{
+    const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    window.open(url,'_blank');
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+  };
+  ov.style.display='flex';
+}
+async function copyMarkdownFallback(){
+  const md=buildMarkdown();
+  const filename='cobo-fiat-design-'+new Date().toISOString().slice(0,10)+'.md';
+  try{
+    await navigator.clipboard.writeText(md);
+    showMdPanel(md,filename,'已复制到剪贴板；也可以在这里手动复制或打开。');
+  }catch(e){
+    showMdPanel(md,filename,'当前环境不允许直接复制，请手动复制下面内容并保存为 .md 文件。');
+  }
+}
+function downloadMarkdown(){
+  const md=buildMarkdown();
+  const filename='cobo-fiat-design-'+new Date().toISOString().slice(0,10)+'.md';
+  try{
+    const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+    if(window.navigator && window.navigator.msSaveOrOpenBlob){
+      window.navigator.msSaveOrOpenBlob(blob, filename);
+      return;
+    }
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=filename;
+    a.rel='noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    setTimeout(()=>showMdPanel(md,filename,'已尝试触发下载。如果没有看到下载文件，说明当前预览环境拦截了浏览器下载；可在这里复制或打开。'),400);
+  }catch(e){
+    showMdPanel(md,filename,'当前环境不允许直接下载，请复制下面内容并保存为 .md 文件。');
+  }
+}
+
 /* ===== top view switch ===== */
 function switchView(v, el){
   document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
