@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>cobo fiat in/out — 设计方案与原型</title>
+<title>Cobo Fiat in/out — 设计方案与原型</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Oxanium:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ============ TOKEN SYSTEM ============ */
@@ -44,9 +44,20 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 .tb-switch{display:flex;gap:4px;background:var(--bg-card);border-radius:8px;padding:4px;}
 .tb-tab{padding:7px 18px;border-radius:6px;font-size:14px;font-weight:500;color:var(--t-secondary);cursor:pointer;transition:all .15s;}
 .tb-tab.active{background:var(--bg-main);color:var(--brand);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.06);}
-
-.tb-download{margin-left:auto;height:32px;padding:0 14px;border-radius:6px;border:1px solid var(--brand);background:var(--bg-main);color:var(--brand);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
-.tb-download:hover{background:var(--brand-10);}
+.tb-actions{margin-left:auto;display:flex;gap:8px;}
+.tb-btn{font-family:inherit;border:1px solid var(--divider);background:var(--bg-main);color:var(--t-primary);font-size:13px;font-weight:500;padding:7px 14px;border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.tb-btn:hover{background:var(--hover2);border-color:var(--t-tertiary);}
+.tb-btn-pri{background:var(--brand);border-color:var(--brand);color:#fff;}
+.tb-btn-pri:hover{background:var(--hover1);border-color:var(--hover1);}
+.md-toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1C1C1C;color:#fff;font-size:13px;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:all .2s;z-index:200;}
+.md-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.md-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:150;padding:24px;}
+.md-modal.show{display:flex;}
+.md-modal-box{background:var(--bg-main);border-radius:14px;width:min(820px,100%);max-height:86vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.25);}
+.md-modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--divider);font-weight:600;font-size:14px;}
+.md-modal-head .mh-actions{display:flex;gap:8px;}
+.md-modal textarea{flex:1;border:0;resize:none;padding:18px 20px;font-family:ui-monospace,'SFMono-Regular',Menlo,monospace;font-size:12.5px;line-height:1.6;color:var(--t-primary);outline:none;white-space:pre;overflow:auto;min-height:340px;background:var(--hover2);}
+.md-modal-foot{padding:12px 20px;border-top:1px solid var(--divider);font-size:12px;color:var(--t-secondary);}
 
 [data-view]{display:none;}
 [data-view].active{display:block;}
@@ -98,6 +109,9 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 .pool-tbl td{padding:14px 16px;font-size:13px;border-top:1px solid var(--line);}
 .pool-tbl td:not(:first-child){text-align:center;}
 .pool-tbl td.name{font-weight:500;}
+.pool-tbl.lft th,.pool-tbl.lft td{text-align:left;}
+.pool-tbl.lft td.rel{color:var(--t-secondary);font-size:12px;}
+.bridge-pill{display:inline-block;background:var(--tg-orange-b);color:var(--tg-orange-t);font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;}
 .chk{color:var(--success);font-weight:600;}
 .cross{color:var(--t-tertiary);}
 .cond{color:var(--notice);font-size:12px;font-weight:500;}
@@ -461,13 +475,15 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
 <!-- ============ TOP SWITCHER ============ -->
 <div class="topbar">
-  <div class="tb-logo"><span class="mk">C</span> cobo fiat in/out</div>
+  <div class="tb-logo"><span class="mk">C</span> Cobo Fiat in/out</div>
   <div class="tb-switch">
     <div class="tb-tab active" onclick="switchView('doc',this)">设计方案</div>
     <div class="tb-tab" onclick="switchView('proto',this)">交互原型</div>
   </div>
-  <button class="tb-download" onclick="downloadMarkdown()">下载 MD</button>
-  <button class="tb-download" style="margin-left:8px;" onclick="copyMarkdownFallback()">复制 MD</button>
+  <div class="tb-actions">
+    <button class="tb-btn" onclick="copyDocMd()">⧉ 复制 MD</button>
+    <button class="tb-btn tb-btn-pri" onclick="downloadDocMd()">↓ 下载 .md</button>
+  </div>
 </div>
 
 <!-- ============ VIEW 1: DESIGN DOC ============ -->
@@ -476,17 +492,17 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- HERO -->
     <div class="doc-hero">
-      <div class="doc-eyebrow">PRODUCT DESIGN · cobo fiat in/out</div>
-      <div class="doc-h1">cobo fiat in/out 法币操作中枢</div>
-      <div class="doc-lead">以法币操作为核心的资金工作台。客户在 Cobo 体系内持有的稳定币与法币余额，可以统一管理、按需转化，并通过两条独立路径完成提现与下发。本方案说明产品定位、资金来源、余额模型与出口逻辑，后续「交互原型」是这套思路的可视化呈现。</div>
+      <div class="doc-eyebrow">PRODUCT DESIGN · COBO FIAT IN/OUT</div>
+      <div class="doc-h1">Cobo Fiat in/out 法币操作中枢</div>
+      <div class="doc-lead">Cobo Fiat in/out 是 Cobo Payment 的下游法币侧。商户在 Payment 收到的稳定币，经 off-ramp <strong>过账</strong>落入这里，变成可持有、可多币种管理的法币，再通过<strong>提现</strong>（打给自己）与<strong>下发</strong>（打给第三方）两条独立路径出去。两者不是两个产品，而是<strong>同一套商户账本上、一条资金链的前后两段</strong>。本方案先讲清两者如何是同一套系统（02 节），再展开账户、来源、余额与出口逻辑；「交互原型」是这套思路的可视化呈现。</div>
     </div>
 
     <!-- 1 POSITIONING -->
     <div class="doc-section">
       <div class="doc-sec-num">01 / 产品定位</div>
-      <div class="doc-h2">cobo fiat in/out 是什么</div>
+      <div class="doc-h2">Cobo Fiat in/out 是什么</div>
       <div class="doc-h2-sub">不是一个换汇工具，而是一个带稳定币入口的法币账户与结算工作台。</div>
-      <div class="doc-p">Cobo 已经具备数字货币侧的基础——Portal、托管钱包、稳定币收单、Off-ramp Core 都已跑通。cobo fiat in/out 要补齐的是<strong>法币侧的操作能力</strong>：让客户不仅能把稳定币换成法币，更能像使用一个真正的法币账户一样，收款、持有、提现、下发。</div>
+      <div class="doc-p">Cobo 已经具备数字货币侧的基础——Portal、托管钱包、稳定币收单、Off-ramp Core 都已跑通。Cobo Fiat in/out 要补齐的是<strong>法币侧的操作能力</strong>：让客户不仅能把稳定币换成法币，更能像使用一个真正的法币账户一样，收款、持有、提现、下发。</div>
       <div class="pos-grid">
         <div class="pos-card">
           <span class="pc-tag" style="background:var(--brand-10);color:var(--brand);">已具备</span>
@@ -502,9 +518,101 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
       <div class="doc-p" style="margin-top:16px;">客户粘性的来源不是某一次的汇率价格，而是<strong>从收款到结算整条链都在 Cobo 内</strong>——VA 账户、余额、合规、路由、对账都在一处，迁移成本很高。</div>
     </div>
 
-    <!-- 02 ACCOUNT MODEL -->
+    <!-- 02 PAYMENT x FIAT —— 串联核心 -->
     <div class="doc-section">
-      <div class="doc-sec-num">02 / 账户模型</div>
+      <div class="doc-sec-num">02 / Payment ↔ Fiat</div>
+      <div class="doc-h2">Payment 与 Fiat：同一套系统的前后两段</div>
+      <div class="doc-h2-sub">Cobo Payment（已上线）管「收 + 分账 + off-ramp」，Cobo Fiat in/out（在建）接住 off-ramp 的落点。两者共享同一套商户实体与账本——这正是「同一笔资金全链路可追踪」的地基。</div>
+
+      <div class="flow-wrap">
+        <svg viewBox="0 0 860 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Poppins',sans-serif;">
+          <defs>
+            <marker id="arrx" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6" fill="none" stroke="#73798B" stroke-width="1.2"/>
+            </marker>
+            <marker id="arro" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
+              <path d="M0,0 L6.5,3 L0,6" fill="none" stroke="#B54708" stroke-width="1.4"/>
+            </marker>
+          </defs>
+
+          <!-- PAYMENT panel -->
+          <rect x="16" y="54" width="348" height="286" rx="14" fill="#F4F8FE" stroke="#175CD3" stroke-width="1.3" stroke-dasharray="5 4"/>
+          <text x="34" y="82" font-size="13" font-weight="700" fill="#175CD3">COBO PAYMENT</text>
+          <text x="34" y="100" font-size="11" fill="#73798B">已上线 · 加密侧</text>
+          <rect x="36" y="116" width="308" height="40" rx="8" fill="#fff" stroke="#DDE3EE"/>
+          <text x="190" y="141" text-anchor="middle" font-size="12" fill="#1C1C1C">收款（top-up / order / 订阅）</text>
+          <path d="M190,156 L190,168" stroke="#73798B" stroke-width="1.2" marker-end="url(#arrx)"/>
+          <rect x="36" y="168" width="308" height="40" rx="8" fill="#fff" stroke="#DDE3EE"/>
+          <text x="190" y="193" text-anchor="middle" font-size="12" fill="#1C1C1C">自动分账（按 developer fee rate）</text>
+          <path d="M190,208 L190,220" stroke="#73798B" stroke-width="1.2" marker-end="url(#arrx)"/>
+          <rect x="36" y="220" width="308" height="56" rx="8" fill="#EFF8FF" stroke="#175CD3" stroke-width="1.3"/>
+          <text x="190" y="243" text-anchor="middle" font-size="12.5" font-weight="600" fill="#175CD3">Merchant / Developer 账户</text>
+          <text x="190" y="262" text-anchor="middle" font-size="11" fill="#175CD3">crypto 子账本（按商户归属）</text>
+
+          <!-- FIAT panel -->
+          <rect x="496" y="54" width="348" height="286" rx="14" fill="#F5F6FF" stroke="#1F32D6" stroke-width="1.3" stroke-dasharray="5 4"/>
+          <text x="514" y="82" font-size="13" font-weight="700" fill="#1F32D6">COBO FIAT IN/OUT</text>
+          <text x="514" y="100" font-size="11" fill="#73798B">在建 · 法币侧</text>
+          <rect x="516" y="116" width="308" height="56" rx="8" fill="rgba(31,50,214,.08)" stroke="#1F32D6" stroke-width="1.3"/>
+          <text x="670" y="139" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1F32D6">fiat 子账本</text>
+          <text x="670" y="158" text-anchor="middle" font-size="11" fill="#1F32D6">同一商户实体 · off-ramp 落点</text>
+          <path d="M670,172 L670,192" stroke="#73798B" stroke-width="1.2" marker-end="url(#arrx)"/>
+          <rect x="516" y="192" width="308" height="42" rx="8" fill="#fff" stroke="#DDE3EE"/>
+          <text x="670" y="210" text-anchor="middle" font-size="12" font-weight="500" fill="#1C1C1C">提现 · 打给自己</text>
+          <text x="670" y="226" text-anchor="middle" font-size="10.5" fill="#73798B">到本人同名账户 / 外部银行</text>
+          <rect x="516" y="244" width="308" height="42" rx="8" fill="#fff" stroke="#DDE3EE"/>
+          <text x="670" y="262" text-anchor="middle" font-size="12" font-weight="500" fill="#1C1C1C">下发 · 第三方 Beneficiary</text>
+          <text x="670" y="278" text-anchor="middle" font-size="10.5" fill="#73798B">走 Partner Payout 末端交付</text>
+          <rect x="516" y="296" width="308" height="32" rx="8" fill="#E4F5EB"/>
+          <text x="670" y="316" text-anchor="middle" font-size="11" font-weight="500" fill="#067647">法币到账 · 全链路对账</text>
+
+          <!-- OFF-RAMP bridge -->
+          <rect x="380" y="208" width="100" height="68" rx="12" fill="#FEDF89" stroke="#B54708" stroke-width="1.4"/>
+          <text x="430" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="#B54708">off-ramp</text>
+          <text x="430" y="249" text-anchor="middle" font-size="12.5" font-weight="700" fill="#B54708">过账</text>
+          <text x="430" y="266" text-anchor="middle" font-size="9.5" fill="#B54708">带同一商户 ID</text>
+          <path d="M344,248 L378,243" stroke="#B54708" stroke-width="1.4" marker-end="url(#arro)"/>
+          <path d="M480,238 C502,238 500,150 514,146" fill="none" stroke="#B54708" stroke-width="1.4" marker-end="url(#arro)"/>
+
+          <!-- shared backbone -->
+          <path d="M190,276 L190,360" stroke="#B9BCC5" stroke-width="1.1" stroke-dasharray="3 3"/>
+          <path d="M670,328 L670,360" stroke="#B9BCC5" stroke-width="1.1" stroke-dasharray="3 3"/>
+          <rect x="16" y="360" width="828" height="46" rx="10" fill="#F1F1F5"/>
+          <text x="430" y="380" text-anchor="middle" font-size="12" font-weight="600" fill="#363F72">共享底座 · 同一个商户实体</text>
+          <text x="430" y="398" text-anchor="middle" font-size="11" fill="#73798B">同一份 KYB · 同一份收款方白名单 · 同一次合规筛查 —— 贯穿两侧，不重复录入</text>
+        </svg>
+      </div>
+
+      <div class="callout" style="background:var(--bg-main);margin-top:16px;">
+        <span class="co-ico">🧬</span>
+        <div class="co-body" style="color:var(--t-secondary);"><strong style="color:var(--t-primary);">设计原则：实体归一，账本分段，off-ramp 过账串联。</strong>该归一的是<strong style="color:var(--t-primary);">商户实体</strong>（共享商户 ID、KYB、收款方白名单），不是余额——Payment 侧是加密货币子账本、Fiat 侧是 off-ramp 之后的法币子账本，两者资产类别与守恒规则不同。每一笔 off-ramp = 一次过账：借记该商户在 Payment 的 crypto 子账本、贷记<strong style="color:var(--t-primary);">同一商户 ID</strong> 在 Fiat 的 fiat 子账本——链条天然可追溯，两侧账各自又都正确。</div>
+      </div>
+
+      <div class="doc-p" style="margin-top:24px;"><strong>账本对应关系（脊梁骨）：</strong>同一套结构在加密侧与法币侧的延续。</div>
+      <div class="pool-tbl lft">
+        <table>
+          <thead><tr><th>Cobo Payment（加密侧 · 已上线）</th><th>Cobo Fiat in/out（法币侧 · 在建）</th><th>关系</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Developer 账户</td><td class="name">组织层 / 组织未分配 · 自有</td><td class="rel">同一主体</td></tr>
+            <tr><td class="name">Merchant 账户（crypto 子账本）</td><td class="name">商户 fiat 子账本</td><td class="rel">同一商户实体，两段账本</td></tr>
+            <tr><td class="name">自动分账（按 fee rate）</td><td class="name">资金守恒 Σ商户子账本 ≤ 组织余额</td><td class="rel">各自记账规则</td></tr>
+            <tr><td class="name">off-ramp → 外部银行</td><td class="name">提现（外部银行 = 出口之一）</td><td class="rel">合并：off-ramp 落进 Fiat</td></tr>
+            <tr><td class="name">Crypto payout / Destination 出款</td><td class="name">下发（第三方 Beneficiary）</td><td class="rel">对应出口</td></tr>
+            <tr><td class="name">Destination 白名单（钱包 + 银行）</td><td class="name">My Accounts（同名）+ Beneficiaries</td><td class="rel">同一份白名单</td></tr>
+            <tr><td class="name">Screening 合规筛查</td><td class="name">法币来源「KYT 已完成」</td><td class="rel">同一次筛查结果</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warn" style="margin-top:16px;">
+        <span class="co-ico">⚠️</span>
+        <div class="co-body"><strong>边界：打通 ≠ 开放法币收款。</strong>Payment 永远只收加密货币；Fiat 想做的「VA 直接收法币」是净新增能力，卡在 MSB（加拿大）/ SRO（瑞士）牌照上（见 07 节红字）。把 Payment 串成闭环不需要新牌照，但「收法币」是另一条战线——两件事不能混为一谈。</div>
+      </div>
+    </div>
+
+    <!-- 03 ACCOUNT MODEL -->
+    <div class="doc-section">
+      <div class="doc-sec-num">03 / 账户模型</div>
       <div class="doc-h2">两层账户：组织持有资金，商户标记归属</div>
       <div class="doc-h2-sub">客户既有自营企业，也有服务大量底层商户的平台型客户（PSP、OTC、电商）。账户分两层，且商户层是可选的。</div>
       <div class="layer-card">
@@ -537,7 +645,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- 03 THREE ENTITIES -->
     <div class="doc-section">
-      <div class="doc-sec-num">03 / 实体建模</div>
+      <div class="doc-sec-num">04 / 实体建模</div>
       <div class="doc-h2">三个独立实体：商户、收款方、关联</div>
       <div class="doc-h2-sub">把「归属」「去向」「连接」拆成三个独立对象，而不是揉在一起——这是同时容纳所有复杂情况的关键。</div>
       <div class="ent-grid">
@@ -569,7 +677,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- 04 KYB -->
     <div class="doc-section">
-      <div class="doc-sec-num">04 / KYB 与材料</div>
+      <div class="doc-sec-num">05 / KYB 与材料</div>
       <div class="doc-h2">两层 KYB 的责任划分</div>
       <div class="doc-h2-sub">Cobo 直接审组织；商户的 KYB 由组织收集申报、组织对真实性负责，Cobo 抽查复核。</div>
       <div class="pool-tbl">
@@ -601,7 +709,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- 05 CONSERVATION -->
     <div class="doc-section">
-      <div class="doc-sec-num">05 / 资金守恒</div>
+      <div class="doc-sec-num">06 / 资金守恒</div>
       <div class="doc-h2">组织层与商户层的账务关系</div>
       <div class="doc-h2-sub">组织层持有全部资金，商户子账本是其中「已归属」的部分。两者不必相等，但永远不能倒挂。</div>
       <div class="eq-box">
@@ -617,7 +725,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- 2 SOURCE MAP -->
     <div class="doc-section">
-      <div class="doc-sec-num">06 / 法币来源</div>
+      <div class="doc-sec-num">07 / 法币来源</div>
       <div class="doc-h2">法币从哪里来</div>
       <div class="doc-h2-sub">四个来源最终汇入同一个法币余额池，但来源属性会影响这笔钱能否被用于下发。</div>
       <div class="srcmap">
@@ -632,16 +740,16 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
         <div class="src-row">
           <div class="src-badge" style="background:var(--tg-blue-b);color:var(--tg-blue-t);">Pay<br>收单</div>
           <div class="src-info">
-            <div class="src-name">Payment 收单转化</div>
-            <div class="src-desc">商户通过 Payment 模块收到的稳定币，经 off-ramp 转为法币。已完成链上 KYT。</div>
+            <div class="src-name">Payment 收单 · off-ramp 过账</div>
+            <div class="src-desc">商户在 Cobo Payment 收到的稳定币（已在 Merchant 账户分账、经 Screening 完成链上 KYT），经 off-ramp 过账落入本侧 fiat 子账本。串联机制见 02 节。</div>
           </div>
           <span class="src-meta" style="background:var(--tg-blue-b);color:var(--tg-blue-t);">KYT 完成</span>
         </div>
         <div class="src-row">
           <div class="src-badge" style="background:var(--brand-10);color:var(--brand);">直接<br>换汇</div>
           <div class="src-info">
-            <div class="src-name">cobo fiat in/out 内直接换汇</div>
-            <div class="src-desc">客户持有的稳定币，在 cobo fiat in/out 内直接 off-ramp 成法币。需 KYT 验证币的来源。</div>
+            <div class="src-name">Cobo Fiat in/out 内直接换汇</div>
+            <div class="src-desc">客户持有的稳定币，在 Cobo Fiat in/out 内直接 off-ramp 成法币。需 KYT 验证币的来源。</div>
           </div>
           <span class="src-meta" style="background:var(--tg-grey-b);color:var(--tg-grey-t);">视 KYT 结果</span>
         </div>
@@ -662,7 +770,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- 3 BALANCE POOL -->
     <div class="doc-section">
-      <div class="doc-sec-num">07 / 余额模型</div>
+      <div class="doc-sec-num">08 / 余额模型</div>
       <div class="doc-h2">统一余额池，但来源有「记忆」</div>
       <div class="doc-h2-sub">客户看到的是一个统一余额；系统内部为每一笔资金保留来源标记，路由层在下发时据此校验。</div>
       <div class="doc-p">余额池表面是一个数字，但下发给第三方时，不是所有资金都能无差别使用。来源属性决定了它的合规可用性——这一层逻辑客户无需感知，只在下发被拦截时才会以提示形式浮现。</div>
@@ -673,8 +781,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           </thead>
           <tbody>
             <tr><td class="name">On-ramp LP 收款</td><td class="chk">✓</td><td class="chk">✓</td></tr>
-            <tr><td class="name">Payment 收单转化</td><td class="chk">✓</td><td class="chk">✓ <span style="font-size:11px;color:var(--t-secondary);">(KYT 完成)</span></td></tr>
-            <tr><td class="name">cobo fiat in/out 直接换汇</td><td class="chk">✓</td><td class="cond">视 KYT 结果</td></tr>
+            <tr><td class="name">Payment 收单 · 过账</td><td class="chk">✓</td><td class="chk">✓ <span style="font-size:11px;color:var(--t-secondary);">(KYT 完成)</span></td></tr>
+            <tr><td class="name">Cobo Fiat in/out 直接换汇</td><td class="chk">✓</td><td class="cond">视 KYT 结果</td></tr>
             <tr><td class="name" style="color:var(--alert);">VA 直接充值</td><td class="cond">牌照前不开放</td><td class="cond">牌照前不开放</td></tr>
           </tbody>
         </table>
@@ -694,7 +802,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- 4 TWO EXITS -->
     <div class="doc-section">
-      <div class="doc-sec-num">08 / 出口逻辑</div>
+      <div class="doc-sec-num">09 / 出口逻辑</div>
       <div class="doc-h2">两个独立出口：提现 vs 下发</div>
       <div class="doc-h2-sub">不只是 UX 上的分支——收款方是不是客户自己，决定了合规负担和执行链路完全不同。做成两个独立菜单。</div>
       <div class="exit-grid">
@@ -737,9 +845,9 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
     <!-- 5 FLOW CHAIN -->
     <div class="doc-section">
-      <div class="doc-sec-num">09 / 完整逻辑链条</div>
+      <div class="doc-sec-num">10 / 完整逻辑链条</div>
       <div class="doc-h2">从入口到出口</div>
-      <div class="doc-h2-sub">多元入口汇入统一余额池，发起转化后按收款方分叉，走两套不同的执行与对账链路。</div>
+      <div class="doc-h2-sub">上游 Payment 段见 02 节；此处展开 off-ramp 过账之后、Fiat 内部的流转：多元来源汇入统一余额池，发起转化后按收款方分叉，走两套不同的执行与对账链路。</div>
       <div class="flow-wrap">
         <svg viewBox="0 0 860 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Poppins',sans-serif;">
           <defs>
@@ -751,8 +859,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           <text x="30" y="34" font-size="11" font-weight="600" fill="#73798B" letter-spacing="1">入口（法币来源）</text>
           <g font-size="12" font-weight="500">
             <rect x="30" y="46" width="180" height="40" rx="6" fill="#E4F5EB"/><text x="120" y="71" text-anchor="middle" fill="#067647">On-ramp LP 收款</text>
-            <rect x="30" y="94" width="180" height="40" rx="6" fill="#EFF8FF"/><text x="120" y="119" text-anchor="middle" fill="#175CD3">Payment 收单转化</text>
-            <rect x="30" y="142" width="180" height="40" rx="6" fill="rgba(31,50,214,.1)"/><text x="120" y="167" text-anchor="middle" fill="#1F32D6">cobo fiat in/out 直接换汇</text>
+            <rect x="30" y="94" width="180" height="40" rx="6" fill="#EFF8FF"/><text x="120" y="119" text-anchor="middle" fill="#175CD3">Payment off-ramp 过账</text>
+            <rect x="30" y="142" width="180" height="40" rx="6" fill="rgba(31,50,214,.1)"/><text x="120" y="167" text-anchor="middle" font-size="10.5" fill="#1F32D6">Cobo Fiat in/out 直接换汇</text>
             <rect x="30" y="190" width="180" height="40" rx="6" fill="#FFF0F1" stroke="#E74E5A" stroke-width="1" stroke-dasharray="4 3"/><text x="120" y="215" text-anchor="middle" fill="#E74E5A">VA 直接充值（需牌照）</text>
           </g>
           <!-- arrows to pool -->
@@ -815,7 +923,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
         <span class="co-ico">📍</span>
         <div class="co-body" style="color:var(--t-secondary);">
           <strong style="color:var(--t-primary);">本版原型包含：</strong>Overview（余额三段视图）、提现流程、下发流程（含商户维度）、三类记录列表（提现 / 下发 / 换汇）、Merchants（商户 + 商户 KYB）、Beneficiaries、My Accounts。<br>
-          <strong style="color:var(--t-primary);">本版占位、下一步实现：</strong>Convert（独立换汇流程）、Settlement（结算室）、中后台运营系统（数据监控 + 路由配置 + 资金守恒实时校验）。
+          <strong style="color:var(--t-primary);">本版占位、下一步实现：</strong>Convert（独立换汇流程）、Settlement（结算室）、中后台运营系统（数据监控 + 路由配置 + 资金守恒实时校验）。<br>
+          <strong style="color:var(--t-primary);">本次新增（Payment ↔ Fiat 串联）：</strong>设计方案侧已补齐 02 节「同一套系统」（端到端资金链 + 账本对应表 + off-ramp 过账原则），并据此校准 07 法币来源与 10 完整逻辑链条。<strong style="color:var(--t-primary);">原型侧</strong>的跨 App 衔接（Overview 顶部「上游 · Payment 待结算」一键 off-ramp 过账）待「一个 / 两个 App」定向后再做。
         </div>
       </div>
     </div>
@@ -1316,7 +1425,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
       </div>
       <div data-step="w3">
         <div class="sumbox">
-          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">cobo fiat in/out · USD 余额</span></div>
+          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat in/out · USD 余额</span></div>
           <div class="sumrow"><span class="sumk">目标账户</span><span class="sumv">Citibank (US) · ****1234<span class="sub">XYZ Trading Ltd</span></span></div>
           <div class="sumrow"><span class="sumk">提现金额</span><span class="sumv amt">USD 100,000.00</span></div>
           <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 50.00</span></div>
@@ -1391,7 +1500,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
       <div data-step="p3">
         <div class="sumbox">
           <div class="sumrow"><span class="sumk">代表商户</span><span class="sumv">商户 A · Lazada-VN<span class="sub">子账本将扣减 USD 50,000</span></span></div>
-          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">cobo fiat in/out · USD 余额（商户 A 归属）</span></div>
+          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat in/out · USD 余额（商户 A 归属）</span></div>
           <div class="sumrow"><span class="sumk">收款方</span><span class="sumv">供应商 X 物流<span class="sub">越南银行 · ****8821</span></span></div>
           <div class="sumrow"><span class="sumk">下发金额</span><span class="sumv amt">USD 50,000.00</span></div>
           <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 80.00</span></div>
@@ -1444,131 +1553,23 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
   <div class="dr-body" id="drBody"></div>
 </div>
 
+<div id="mdToast" class="md-toast">已复制</div>
+<div id="mdModal" class="md-modal" onclick="if(event.target===this)closeMdModal()">
+  <div class="md-modal-box">
+    <div class="md-modal-head">
+      <span>设计方案 · Markdown</span>
+      <div class="mh-actions">
+        <button class="tb-btn" onclick="mdModalCopy()">复制</button>
+        <button class="tb-btn tb-btn-pri" onclick="downloadDocMd()">下载 .md</button>
+        <button class="tb-btn" onclick="closeMdModal()">关闭</button>
+      </div>
+    </div>
+    <textarea id="mdArea" readonly spellcheck="false"></textarea>
+    <div class="md-modal-foot">导出的是「设计方案」整篇内容。若浏览器拦截了自动复制 / 下载，请在文本框内全选（Ctrl / ⌘ + A）后手动复制。</div>
+  </div>
+</div>
+
 <script>
-
-/* ===== Markdown export ===== */
-function mdEscapePipe(s){return s.replace(/\|/g,'\\|').trim();}
-function cleanText(el){return (el.innerText||el.textContent||'').replace(/\u00a0/g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();}
-function tableToMarkdown(table){
-  const rows=[...table.querySelectorAll('tr')].map(tr=>[...tr.children].map(c=>mdEscapePipe(cleanText(c))));
-  if(!rows.length)return '';
-  const head=rows[0];
-  const sep=head.map(()=> '---');
-  const body=rows.slice(1);
-  return ['| '+head.join(' | ')+' |','| '+sep.join(' | ')+' |',...body.map(r=>'| '+r.join(' | ')+' |')].join('\n');
-}
-function cardToBullets(el){
-  const lines=cleanText(el).split('\n').map(s=>s.trim()).filter(Boolean);
-  if(!lines.length)return '';
-  const title=lines[0];
-  const rest=lines.slice(1).map(s=>'  - '+s).join('\n');
-  return '- '+title+(rest?'\n'+rest:'');
-}
-function sectionToMarkdown(section){
-  let out=[];
-  const direct=[...section.children];
-  direct.forEach(el=>{
-    if(el.classList.contains('doc-sec-num')) out.push('---\n\n**'+cleanText(el)+'**');
-    else if(el.classList.contains('doc-h2')) out.push('## '+cleanText(el));
-    else if(el.classList.contains('doc-h2-sub')) out.push('_'+cleanText(el)+'_');
-    else if(el.classList.contains('doc-p')) out.push(cleanText(el));
-    else if(el.classList.contains('callout') || el.classList.contains('principle')) out.push(cleanText(el).split('\n').map(l=>'> '+l).join('\n'));
-    else if(el.classList.contains('eq-box') || el.classList.contains('eq-hard')) out.push('```text\n'+cleanText(el)+'\n```');
-    else if(el.querySelector('table')) out.push(tableToMarkdown(el.querySelector('table')));
-    else if(el.classList.contains('pos-grid') || el.classList.contains('ent-grid') || el.classList.contains('exit-grid')) out.push([...el.children].map(cardToBullets).join('\n'));
-    else if(el.classList.contains('srcmap')) out.push([...el.querySelectorAll('.src-row')].map(cardToBullets).join('\n'));
-    else if(el.classList.contains('layer-card')) out.push(cardToBullets(el));
-    else if(el.classList.contains('flow-wrap')) out.push('> 此处为原型中的流程图，可在 HTML 原型中查看完整可视化链路。');
-    else if(cleanText(el)) out.push(cleanText(el));
-  });
-  return out.filter(Boolean).join('\n\n');
-}
-function buildMarkdown(){
-  const doc=document.querySelector('.doc');
-  const parts=[];
-  const hero=doc.querySelector('.doc-hero');
-  if(hero){
-    const eyebrow=hero.querySelector('.doc-eyebrow');
-    const h1=hero.querySelector('.doc-h1');
-    const lead=hero.querySelector('.doc-lead');
-    if(eyebrow)parts.push('<!-- '+cleanText(eyebrow)+' -->');
-    if(h1)parts.push('# '+cleanText(h1));
-    if(lead)parts.push(cleanText(lead));
-  }
-  [...doc.querySelectorAll(':scope > .doc-section')].forEach(sec=>parts.push(sectionToMarkdown(sec)));
-  parts.push('\n---\n\n_由 cobo fiat in/out 原型页面导出。_');
-  return parts.filter(Boolean).join('\n\n');
-}
-function showMdPanel(md, filename, message){
-  let ov=document.getElementById('mdFallbackOverlay');
-  if(!ov){
-    ov=document.createElement('div');
-    ov.id='mdFallbackOverlay';
-    ov.style.cssText='position:fixed;inset:0;background:rgba(28,28,28,.45);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;';
-    ov.innerHTML=`<div style="background:#fff;border-radius:10px;width:min(760px,96vw);max-height:86vh;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.18);">
-      <div style="padding:20px 24px;border-bottom:1px solid #EDEEF3;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-        <div><div style="font-size:18px;font-weight:600;">Markdown 已生成</div><div id="mdFallbackMsg" style="font-size:13px;color:#73798B;margin-top:4px;"></div></div>
-        <button onclick="document.getElementById('mdFallbackOverlay').style.display='none'" style="border:none;background:transparent;font-size:20px;cursor:pointer;color:#73798B;">×</button>
-      </div>
-      <div style="padding:16px 24px;display:flex;gap:10px;flex-wrap:wrap;">
-        <button id="mdCopyBtn" style="height:36px;padding:0 16px;border:none;border-radius:6px;background:#1F32D6;color:white;font-weight:600;cursor:pointer;">复制 Markdown</button>
-        <button id="mdDataBtn" style="height:36px;padding:0 16px;border:1px solid #1F32D6;border-radius:6px;background:white;color:#1F32D6;font-weight:600;cursor:pointer;">在新标签页打开</button>
-        <span style="font-size:12px;color:#73798B;align-self:center;">文件名：<span id="mdFallbackFilename"></span></span>
-      </div>
-      <textarea id="mdFallbackText" readonly style="margin:0 24px 24px;height:46vh;resize:vertical;border:1px solid #EDEEF3;border-radius:6px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.55;white-space:pre;"></textarea>
-    </div>`;
-    document.body.appendChild(ov);
-  }
-  document.getElementById('mdFallbackMsg').textContent=message||'如果浏览器没有开始下载，可复制下面内容并保存为 .md 文件。';
-  document.getElementById('mdFallbackFilename').textContent=filename;
-  const ta=document.getElementById('mdFallbackText');
-  ta.value=md;
-  document.getElementById('mdCopyBtn').onclick=async()=>{
-    try{await navigator.clipboard.writeText(md); document.getElementById('mdCopyBtn').textContent='已复制 ✓';}
-    catch(e){ta.focus();ta.select();document.execCommand('copy');document.getElementById('mdCopyBtn').textContent='已选中，请复制';}
-  };
-  document.getElementById('mdDataBtn').onclick=()=>{
-    const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
-    const url=URL.createObjectURL(blob);
-    window.open(url,'_blank');
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-  };
-  ov.style.display='flex';
-}
-async function copyMarkdownFallback(){
-  const md=buildMarkdown();
-  const filename='cobo-fiat-design-'+new Date().toISOString().slice(0,10)+'.md';
-  try{
-    await navigator.clipboard.writeText(md);
-    showMdPanel(md,filename,'已复制到剪贴板；也可以在这里手动复制或打开。');
-  }catch(e){
-    showMdPanel(md,filename,'当前环境不允许直接复制，请手动复制下面内容并保存为 .md 文件。');
-  }
-}
-function downloadMarkdown(){
-  const md=buildMarkdown();
-  const filename='cobo-fiat-design-'+new Date().toISOString().slice(0,10)+'.md';
-  try{
-    const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
-    if(window.navigator && window.navigator.msSaveOrOpenBlob){
-      window.navigator.msSaveOrOpenBlob(blob, filename);
-      return;
-    }
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=filename;
-    a.rel='noopener';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-    setTimeout(()=>showMdPanel(md,filename,'已尝试触发下载。如果没有看到下载文件，说明当前预览环境拦截了浏览器下载；可在这里复制或打开。'),400);
-  }catch(e){
-    showMdPanel(md,filename,'当前环境不允许直接下载，请复制下面内容并保存为 .md 文件。');
-  }
-}
-
 /* ===== top view switch ===== */
 function switchView(v, el){
   document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
@@ -1870,6 +1871,153 @@ function renderMyAcc(){
 
 renderMerchants(); renderBen(); renderMyAcc();
 
+/* ===== Markdown 导出（设计方案） ===== */
+function _mdInline(el){
+  var s='';
+  el.childNodes.forEach(function(n){
+    if(n.nodeType===3){ s+=n.textContent; }
+    else if(n.nodeType===1){
+      var t=n.tagName.toLowerCase();
+      if(t==='strong'||t==='b'){ var inner=_mdInline(n).trim(); s+= inner?('**'+inner+'**'):''; }
+      else if(t==='br'){ s+='\n'; }
+      else { s+=_mdInline(n); }
+    }
+  });
+  return s;
+}
+function _clean(s){ return s.replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim(); }
+function _cell(el){ return _clean(_mdInline(el)).replace(/\n+/g,' ').replace(/\|/g,'\\|').trim(); }
+function _mdTable(table){
+  if(!table) return '';
+  var rows=[].slice.call(table.querySelectorAll('tr')), lines=[];
+  rows.forEach(function(tr,i){
+    var cells=[].slice.call(tr.children).map(_cell);
+    lines.push('| '+cells.join(' | ')+' |');
+    if(i===0) lines.push('| '+cells.map(function(){return '---';}).join(' | ')+' |');
+  });
+  return lines.join('\n');
+}
+function _mdBlock(el){
+  if(el.nodeType!==1) return [];
+  var c=el.classList, tag=el.tagName.toLowerCase();
+  if(tag==='svg'||c.contains('flow-wrap')) return ['> 📊 *（图示：详见交互式 HTML 原型）*'];
+  if(c.contains('bd-bar')||c.contains('bd-legend')) return [];
+  if(c.contains('pool-tbl')) return [_mdTable(el.querySelector('table'))];
+  if(tag==='table') return [_mdTable(el)];
+  if(c.contains('doc-p')) return [_clean(_mdInline(el))];
+  if(c.contains('callout')){
+    var body=el.querySelector('.co-body')||el, ico=el.querySelector('.co-ico');
+    var txt=_clean((ico?ico.textContent.trim()+' ':'')+_mdInline(body));
+    return txt.split('\n').map(function(l){return '> '+l;});
+  }
+  if(c.contains('pos-grid')){
+    var o=[];
+    el.querySelectorAll('.pos-card').forEach(function(card){
+      var tg=card.querySelector('.pc-tag'),tt=card.querySelector('.pc-title'),d=card.querySelector('.pc-desc');
+      o.push('- '+(tg?'`'+tg.textContent.trim()+'` ':'')+'**'+(tt?tt.textContent.trim():'')+'** — '+(d?_clean(_mdInline(d)):''));
+    });
+    return o;
+  }
+  if(c.contains('layer-card')){
+    var o2=[],lt=el.querySelector('.layer-tag'),tl=el.querySelector('.layer-title');
+    o2.push('**'+(lt?lt.textContent.trim():'')+'** — '+(tl?tl.textContent.trim():''));
+    el.querySelectorAll('.layer-list li').forEach(function(li){ o2.push('- '+_clean(_mdInline(li))); });
+    return o2;
+  }
+  if(c.contains('principle')){
+    var lab=el.querySelector('.pr-label'),pt=el.querySelector('.pr-text');
+    return ['> **'+(lab?lab.textContent.trim():'')+'：** '+(pt?_clean(_mdInline(pt)):'')];
+  }
+  if(c.contains('ent-grid')){
+    var o3=[];
+    el.querySelectorAll('.ent-card').forEach(function(card){
+      var nm=card.querySelector('.ent-name'),q=card.querySelector('.ent-q'),d=card.querySelector('.ent-desc');
+      o3.push('- **'+(nm?nm.textContent.trim():'')+'**'+(q?'（'+q.textContent.trim()+'）':'')+'：'+(d?_clean(_mdInline(d)):''));
+    });
+    return o3;
+  }
+  if(c.contains('exit-grid')){
+    var o4=[];
+    el.querySelectorAll('.exit-card').forEach(function(card){
+      var t=card.querySelector('.exit-title'),tl=card.querySelector('.exit-tagline');
+      o4.push('**'+(t?t.textContent.trim():'')+'**'+(tl?' · '+tl.textContent.trim():''));
+      card.querySelectorAll('.exit-attr').forEach(function(a){
+        var k=a.querySelector('.k'),v=a.querySelector('.v');
+        o4.push('- '+(k?k.textContent.trim():'')+'：'+(v?v.textContent.trim():''));
+      });
+      o4.push('');
+    });
+    return o4;
+  }
+  if(c.contains('srcmap')){
+    var o5=[];
+    el.querySelectorAll('.src-row').forEach(function(r){
+      var nm=r.querySelector('.src-name'),d=r.querySelector('.src-desc'),m=r.querySelector('.src-meta');
+      o5.push('- **'+(nm?nm.textContent.trim():'')+'**'+(m?'（'+m.textContent.trim()+'）':'')+'：'+(d?_clean(_mdInline(d)):''));
+    });
+    return o5;
+  }
+  if(c.contains('eq-box')||c.contains('eq-hard')){
+    var o6=[],lab2=el.querySelector('.eqh-label');
+    if(lab2) o6.push('**'+lab2.textContent.trim()+'**');
+    el.querySelectorAll('.eq').forEach(function(e){ o6.push('```'); o6.push(e.textContent.replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim()); o6.push('```'); });
+    return o6;
+  }
+  var ft=_clean(_mdInline(el));
+  return ft?[ft]:[];
+}
+function buildDocMarkdown(){
+  var doc=document.querySelector('[data-view="doc"] .doc'); if(!doc) return '';
+  var parts=[];
+  var h1=doc.querySelector('.doc-h1'); if(h1) parts.push('# '+h1.textContent.trim());
+  var lead=doc.querySelector('.doc-lead'); if(lead) parts.push(_clean(_mdInline(lead)));
+  doc.querySelectorAll('.doc-section').forEach(function(sec){
+    var num=sec.querySelector('.doc-sec-num'),h2=sec.querySelector('.doc-h2'),sub=sec.querySelector('.doc-h2-sub');
+    var head = h2 ? ('## '+(num?num.textContent.trim()+' · ':'')+h2.textContent.trim())
+                  : (num?('## '+num.textContent.trim()):'');
+    if(head) parts.push(head);
+    if(sub) parts.push('*'+sub.textContent.trim()+'*');
+    [].slice.call(sec.children).forEach(function(ch){
+      var cl=ch.classList;
+      if(cl.contains('doc-sec-num')||cl.contains('doc-h2')||cl.contains('doc-h2-sub')) return;
+      var lines=_mdBlock(ch);
+      if(lines&&lines.length) parts.push(lines.join('\n'));
+    });
+  });
+  return parts.join('\n\n').replace(/\n{3,}/g,'\n\n').trim()+'\n';
+}
+function _toast(msg){ var t=document.getElementById('mdToast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(function(){t.classList.remove('show');},1800); }
+function openMdModal(md){ var m=document.getElementById('mdModal'); document.getElementById('mdArea').value=md; m.classList.add('show'); }
+function closeMdModal(){ document.getElementById('mdModal').classList.remove('show'); }
+function _selectCopy(text){
+  openMdModal(text);
+  var ta=document.getElementById('mdArea'); ta.focus(); ta.select();
+  try{ if(document.execCommand('copy')){ _toast('已复制 Markdown'); return true; } }catch(e){}
+  return false;
+}
+function copyDocMd(){
+  var md=buildDocMarkdown();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(md).then(function(){ _toast('已复制 Markdown'); }).catch(function(){ _selectCopy(md); });
+  } else { _selectCopy(md); }
+}
+function mdModalCopy(){
+  var md=document.getElementById('mdArea').value;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(md).then(function(){ _toast('已复制 Markdown'); }).catch(function(){ _selectCopy(md); });
+  } else { _selectCopy(md); }
+}
+function downloadDocMd(){
+  var md=buildDocMarkdown();
+  try{
+    var blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download='cobo-fiat-in-out-设计方案.md';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },120);
+    _toast('已开始下载 .md');
+  }catch(e){ openMdModal(md); }
+}
 </script>
 </body>
 </html>
