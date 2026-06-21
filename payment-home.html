@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment 首页 · 业务工作台 (v4)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Oxanium:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#1F32D6;          /* Color/Brand/Main */
+    --brand-hover:#131E80;    /* Cmpt/Hover-1 */
+    --bg-card:#EDEEF3;        /* Bg/Card 页面画布 */
+    --bg-main:#FFFFFF;        /* Bg/Main 卡片 */
+    --text-primary:#1C1C1C;   /* Text/Primary */
+    --text-secondary:#73798B; /* Text/Secondary */
+    --text-tertiary:#B9BCC5;  /* Text/Tertiary */
+    --text-white:#FFFFFF;     /* Text/White */
+    --divider:#EDEEF3;        /* Divider */
+    --line-table:#F8F9FC;     /* Line/Table */
+    --alert:#E74E5A;          /* Color/State/Alert */
+    --success:#26C165;        /* Color/State/Success */
+    --notice:#FA8C16;         /* Color/State/Notice */
+    --hover2:#F8F9FC;         /* Cmpt/Hover-2 */
+    --hover3:#EDEEF4;         /* Cmpt/Hover-3 */
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--text-primary);-webkit-font-smoothing:antialiased;}
+  .num{font-family:'Oxanium',monospace;}
+  .app{display:flex;min-height:100vh;}
+
+  /* 64px 图标轨道 */
+  .rail{width:64px;flex-shrink:0;background:var(--bg-card);border-right:1px solid var(--divider);display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:8px;}
+  .rail .logo{width:32px;height:32px;border-radius:6px;background:var(--brand);color:var(--text-white);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;margin-bottom:16px;}
+  .rail .ic{width:40px;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:9px;text-align:center;cursor:pointer;}
+  .rail .ic.active{background:var(--bg-main);color:var(--brand);}
+  .rail .ic:hover{background:var(--hover3);}
+  .rail .ic .ri{width:18px;height:18px;border-radius:6px;background:currentColor;opacity:.5;}  /* 图标占位块（真实图标交付时换 Cobo 图标集） */
+  .rail .ic.active .ri{opacity:1;}
+
+  /* 296px 二级导航 */
+  .sidebar{width:296px;flex-shrink:0;background:var(--bg-card);border-right:1px solid var(--divider);padding:24px 16px;}
+  .sidebar h1{font-size:20px;font-weight:600;line-height:32px;margin:0 8px 24px;}
+  .nav-group{margin-bottom:24px;}
+  .nav-group .gl{font-size:12px;font-weight:600;line-height:20px;color:var(--text-tertiary);padding:0 8px;margin-bottom:8px;}
+  .nav-group .gl .new-badge{display:inline-block;background:var(--brand);color:var(--text-white);font-size:9px;font-weight:600;line-height:14px;padding:0 5px;border-radius:4px;margin-left:6px;vertical-align:middle;}  /* 新 标 */
+  .nav-item{display:flex;align-items:center;gap:12px;height:36px;padding:0 8px;border-radius:6px;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;margin-bottom:2px;}
+  .nav-item .dot{width:16px;height:16px;border-radius:4px;background:var(--hover3);flex-shrink:0;}
+  .nav-item:hover{background:var(--hover3);}
+  .nav-item.active{background:var(--bg-main);color:var(--brand);font-weight:600;}
+  .nav-item.active .dot{background:var(--brand);}
+
+  /* 主内容区 */
+  .content{flex:1;padding:24px 32px 48px;max-width:1112px;position:relative;}
+  .page-head{display:flex;align-items:baseline;gap:12px;margin-bottom:24px;}
+  .page-head .pt{font-size:20px;font-weight:600;line-height:32px;}
+  .page-head .pd{font-size:14px;font-weight:400;color:var(--text-secondary);}
+  .proto-tag{position:absolute;top:24px;right:32px;font-size:10px;font-weight:600;line-height:16px;padding:2px 8px;border-radius:4px;color:#363F72;background:#F1F1F5;}
+
+  .card{background:var(--bg-main);border-radius:10px;padding:24px;}
+  .row{display:flex;gap:16px;margin-bottom:16px;align-items:stretch;}
+  .sec-title{font-size:18px;font-weight:600;line-height:28px;margin-bottom:16px;}
+  .sec-title .cnt{font-size:12px;font-weight:600;color:var(--text-secondary);margin-left:8px;}
+
+  /* Account Snapshot */
+  .snap{flex:2;display:flex;gap:24px;}
+  .snap-bal{flex:1.1;min-width:0;}
+  .snap-today{flex:1;min-width:0;border-left:1px solid var(--divider);padding-left:24px;}
+  .snap-today .lbl{margin-bottom:8px;}
+  .today-item{padding:10px 0;border-bottom:1px solid var(--line-table);}
+  .today-item:last-child{border-bottom:none;padding-bottom:0;}
+  .today-item .ti-head{font-size:12px;font-weight:500;color:var(--text-secondary);display:flex;align-items:center;gap:8px;}
+  .today-item .ti-val{font-size:18px;font-weight:600;line-height:26px;}
+  .today-item .ti-sub{font-size:11px;font-weight:400;color:var(--text-secondary);line-height:16px;}
+  .snap .lbl{font-size:12px;font-weight:500;color:var(--text-secondary);line-height:20px;}
+  .snap .total{font-size:24px;font-weight:600;line-height:32px;margin-top:4px;}
+  .snap-stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--divider);}
+  .snap-stat .ss-l{font-size:12px;font-weight:500;color:var(--text-secondary);line-height:20px;}
+  .snap-stat .ss-v{font-size:18px;font-weight:600;line-height:28px;margin-top:4px;}
+  .snap-split{margin-top:16px;display:flex;gap:8px;}
+  .split-pill{flex:1;background:var(--bg-card);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:4px;}
+  .split-pill .sp-l{font-size:12px;font-weight:500;color:var(--text-secondary);display:flex;align-items:center;gap:6px;}
+  .split-pill .sp-v{font-size:16px;font-weight:600;}
+
+  /* Quick Actions */
+  .quick{flex:0 0 240px;display:flex;flex-direction:column;}
+  .quick .qa-label{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;}
+  .quick .btn{margin-bottom:8px;justify-content:flex-start;}
+
+  /* 按钮 */
+  .btn{height:36px;padding:0 16px;border-radius:6px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;line-height:22px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+  .btn .bi{display:inline-block;width:16px;text-align:center;font-size:14px;line-height:1;}  /* 临时字符符号占位，待换 Cobo 图标集 */
+  .btn-primary{background:var(--brand);color:var(--text-white);}
+  .btn-primary:hover{background:var(--brand-hover);}
+  .btn-primary:focus{outline:2px solid var(--brand);outline-offset:2px;}
+  .btn-secondary{background:transparent;color:var(--brand);border:1px solid var(--brand);}
+  .btn-secondary:hover{background:#F4F5FE;}
+  .btn-tertiary{background:var(--bg-card);color:var(--text-primary);}
+  .btn-tertiary:hover{background:var(--hover3);}
+  .btn-sm{height:28px;padding:0 12px;font-size:12px;border-radius:4px;}
+
+  /* KPI 三联 */
+  .kpi{flex:1;}
+  .kpi .k-l{font-size:12px;font-weight:500;color:var(--text-secondary);line-height:20px;display:flex;align-items:center;gap:8px;}
+  .kpi .k-v{font-size:24px;font-weight:600;line-height:32px;margin-top:8px;}
+  .kpi .k-s{font-size:12px;font-weight:400;color:var(--text-secondary);margin-top:8px;line-height:20px;}
+  .k-ic{width:8px;height:8px;border-radius:50%;}
+
+  /* Required Actions */
+  .req .req-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-table);}
+  .req .req-row:last-child{border-bottom:none;}
+  .req .rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .rdot-notice{background:var(--notice);}
+  .rdot-alert{background:var(--alert);}
+  .req .rtext{flex:1;font-size:14px;font-weight:500;line-height:22px;}
+  .req .rsub{font-size:12px;font-weight:400;color:var(--text-secondary);}
+
+  /* 账户结构 2×2 */
+  .matrix{width:100%;border-collapse:collapse;margin-top:4px;}
+  .matrix th,.matrix td{border:1px solid var(--divider);padding:16px;text-align:left;font-size:14px;line-height:22px;}
+  .matrix thead th{background:var(--bg-card);font-weight:600;color:var(--text-secondary);}
+  .matrix tbody th{background:var(--bg-card);font-weight:600;width:120px;}
+  .matrix td .mamt{font-weight:600;}
+  .matrix td .mlabel{color:var(--text-secondary);font-size:12px;font-weight:400;}
+  .bal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .acts{display:flex;gap:4px;flex-wrap:wrap;}
+  .act-link{background:transparent;border:none;color:var(--brand);font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;line-height:20px;cursor:pointer;padding:2px 6px;border-radius:4px;}  /* 行内操作 */
+  .act-link:hover{background:#F4F5FE;}
+  /* 余额：归属为主轴（商户列表 / 开发者单卡） */
+  .bal-sub-head{display:flex;align-items:center;justify-content:space-between;margin:24px 0 8px;}
+  .bal-sub-title{font-size:14px;font-weight:600;line-height:22px;}
+  .bal-sub-title .agg{font-weight:400;color:var(--text-secondary);margin-left:8px;font-size:12px;}
+  .view-all{font-size:12px;font-weight:500;color:var(--brand);cursor:pointer;}
+  .bl-row{display:flex;align-items:center;gap:16px;padding:12px 16px;border:1px solid var(--divider);border-radius:10px;margin-bottom:8px;}
+  .bl-row:hover{background:var(--hover2);}
+  .bl-main{flex:1;min-width:0;}
+  .bl-name{font-size:14px;font-weight:600;line-height:22px;}
+  .bl-meta{font-size:12px;font-weight:400;color:var(--text-secondary);line-height:18px;display:flex;align-items:center;gap:8px;}
+  .bl-meta .mtag{font-size:10px;font-weight:600;color:#6941C6;background:#F4F2FB;padding:1px 6px;border-radius:4px;}  /* Tag 紫 */
+  .bl-amt{font-size:16px;font-weight:600;text-align:right;min-width:160px;}
+  .bl-amt .bl-split{display:block;font-size:11px;font-weight:400;color:var(--text-secondary);}
+  .bl-acts{display:flex;gap:4px;flex-shrink:0;}
+  .more-row{text-align:center;padding:4px;}
+  .phase-tag{font-size:10px;font-weight:600;color:#B54708;background:#FEDF89;padding:1px 6px;border-radius:4px;}  /* Tag 橙：阶段标记 */
+  .phase-note{font-size:12px;font-weight:400;line-height:18px;color:var(--text-secondary);margin-top:8px;display:flex;gap:6px;}
+
+  /* Business Activity 表 */
+  .act{flex:1.7;}
+  .atable{width:100%;border-collapse:collapse;}
+  .atable th{height:44px;background:var(--bg-card);text-align:left;font-size:14px;font-weight:500;color:var(--text-secondary);padding:0 16px;}
+  .atable td{padding:14px 16px;font-size:14px;border-top:1px solid var(--line-table);}
+  .atable tr:hover td{background:var(--hover2);}
+  .tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;line-height:16px;padding:2px 8px;border-radius:4px;}
+  .tag-green{color:#067647;background:#E4F5EB;}
+  .tag-orange{color:#B54708;background:#FEDF89;}
+  .tag-red{color:#B42318;background:#FEE4E2;}  /* Failed 红色：规范示例要求 Failed=红，但 Tag 色表未列红对，待设计确认 token */
+
+  /* 能力地图（降级小模块） */
+  .flowmod{flex:1;}
+  .flowmod .fm-note{font-size:12px;font-weight:400;color:var(--text-secondary);margin-bottom:16px;line-height:18px;}
+  .mini-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .mini-node{background:var(--bg-card);border-radius:6px;padding:8px 12px;font-size:12px;font-weight:500;text-align:center;flex:1;}
+  .mini-node.acct{border:1px solid var(--brand);color:var(--brand);}
+  .mini-arrow{color:var(--brand);font-weight:600;}
+  .mini-ops{margin-top:12px;font-size:12px;color:var(--text-secondary);text-align:center;line-height:18px;}
+
+  .foot-note{font-size:12px;font-weight:400;line-height:20px;color:var(--text-tertiary);padding:8px 4px 0;}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail">
+    <div class="logo">C</div>
+    <div class="ic"><span class="ri"></span></div>
+    <div class="ic active"><span class="ri"></span></div>
+    <div class="ic"><span class="ri"></span></div>
+    <div class="ic"><span class="ri"></span></div>
+    <div class="ic"><span class="ri"></span></div>
+  </nav>
+
+  <nav class="sidebar">
+    <h1>Payment</h1>
+    <div class="nav-group">
+      <div class="gl">概览</div>
+      <div class="nav-item active" onclick="showHome(this)"><span class="dot"></span>Home 工作台</div>
+      <div class="nav-item" onclick="showHome(this)"><span class="dot"></span>Balances 余额</div>
+    </div>
+    <div class="nav-group">
+      <div class="gl">法币 Fiat</div>
+      <div class="nav-item" onclick="showFiat('overview',this)"><span class="dot"></span>Fiat Overview</div>
+      <div class="nav-item" onclick="showFiat('convert',this)"><span class="dot"></span>Convert 换汇</div>
+      <div class="nav-item" onclick="showFiat('wrecords',this)"><span class="dot"></span>Withdraw 提现记录</div>
+      <div class="nav-item" onclick="showFiat('precords',this)"><span class="dot"></span>Payout 下发记录</div>
+      <div class="nav-item" onclick="showFiat('accounts',this)"><span class="dot"></span>My Accounts 同名账户</div>
+      <div class="nav-item" onclick="showFiat('orgkyb',this)"><span class="dot"></span>Organization KYB</div>
+      <div class="nav-item" onclick="showFiat('merchants',this)"><span class="dot"></span>Merchants 商户</div>
+      <div class="nav-item" onclick="showFiat('beneficiaries',this)"><span class="dot"></span>Beneficiaries 收款方</div>
+    </div>
+    <div class="nav-group">
+      <div class="gl">收款 Inflow</div>
+      <div class="nav-item"><span class="dot"></span>Pay-in 收款订单</div>
+      <div class="nav-item"><span class="dot"></span>Top-up 充值</div>
+    </div>
+    <div class="nav-group">
+      <div class="gl">下发 Outflow</div>
+      <div class="nav-item"><span class="dot"></span>Payout 下发</div>
+      <div class="nav-item"><span class="dot"></span>Bulk Send 批量下发</div>
+    </div>
+    <div class="nav-group">
+      <div class="gl">管理 Operations</div>
+      <div class="nav-item"><span class="dot"></span>Allocate 余额分配</div>
+      <div class="nav-item"><span class="dot"></span>Merchants 商户</div>
+      <div class="nav-item"><span class="dot"></span>Activities 资金活动</div>
+      <div class="nav-item"><span class="dot"></span>Reports 报表</div>
+    </div>
+    <div class="nav-group">
+      <div class="gl">Settlement Network<span class="new-badge">新</span></div>
+      <div class="nav-item"><span class="dot"></span>Network 成员</div>
+      <div class="nav-item"><span class="dot"></span>Settlement 房间</div>
+    </div>
+  </nav>
+
+  <main class="content">
+    <span class="proto-tag">Prototype · 示例数据</span>
+    <iframe id="fiatFrame" title="Cobo Fiat" style="display:none;width:100%;height:calc(100vh - 96px);border:none;border-radius:10px;background:var(--bg-card);"></iframe>
+    <div id="homeView">
+    <div class="page-head"><span class="pt">Payment</span><span class="pd">Jun 18, 2026 · 今日概览</span></div>
+
+    <!-- ===== 第一屏：账户快照 + 快捷操作 ===== -->
+    <div class="row">
+      <section class="card snap">
+        <div class="snap-bal">
+          <div class="lbl">Total Balance · 总余额</div>
+          <div class="total num">$48,920.00</div>
+          <div class="snap-stats">
+            <div class="snap-stat"><div class="ss-l">可用余额 Available</div><div class="ss-v num">$42,960.00</div></div>
+            <div class="snap-stat"><div class="ss-l">待结算 Pending</div><div class="ss-v num">$5,960.00</div></div>
+            <div class="snap-stat"><div class="ss-l">处理中 Processing</div><div class="ss-v num">$3,120.00</div></div>
+          </div>
+          <div class="snap-split">
+            <div class="split-pill"><span class="sp-l">💠 Crypto</span><span class="sp-v num">$38,920.00</span></div>
+            <div class="split-pill"><span class="sp-l">💵 Fiat</span><span class="sp-v num">$10,000.00</span></div>
+          </div>
+        </div>
+        <div class="snap-today">
+          <div class="lbl">今日业务 · Today</div>
+          <div class="today-item">
+            <div class="ti-head"><span class="k-ic" style="background:#26C165"></span>今日入金 Inflow</div>
+            <div class="ti-val num">$8,240.00</div>
+            <div class="ti-sub">12 笔 · Order 10 · Top-up 2</div>
+          </div>
+          <div class="today-item">
+            <div class="ti-head"><span class="k-ic" style="background:#1F32D6"></span>今日出金 Outflow</div>
+            <div class="ti-val num">$3,120.00</div>
+            <div class="ti-sub">5 笔 · Payout 4 · Bulk Send 1</div>
+          </div>
+          <div class="today-item">
+            <div class="ti-head"><span class="k-ic" style="background:#FA8C16"></span>待处理 Pending</div>
+            <div class="ti-val num">4</div>
+            <div class="ti-sub">3 处理中订单 · 1 笔下发失败</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card quick">
+        <div class="qa-label">快捷操作 Quick Actions</div>
+        <button class="btn btn-primary"><span class="bi">＋</span>Create Order</button>
+        <button class="btn btn-tertiary"><span class="bi">↓</span>Top-up</button>
+        <button class="btn btn-tertiary"><span class="bi">➤</span>Payout</button>
+        <button class="btn btn-tertiary"><span class="bi">⇉</span>Bulk Send</button>
+        <button class="btn btn-tertiary"><span class="bi">⇄</span>Allocate</button>
+      </section>
+    </div>
+
+    <!-- 业务流转 KPI 已并入上方账户快照右栏（今日业务） -->
+
+
+    <!-- ===== 待处理事项（合规/开通的落点） ===== -->
+    <section class="card req" style="margin-bottom:16px;">
+      <div class="sec-title">待处理事项 · Required Actions<span class="cnt">4 项</span></div>
+      <div class="req-row">
+        <span class="rdot rdot-notice"></span>
+        <span class="rtext">2 个商户待 KYB 审核 <span class="rsub">· 通过后这些商户方可收款</span></span>
+        <button class="btn btn-secondary btn-sm">去审核</button>
+      </div>
+      <div class="req-row">
+        <span class="rdot rdot-notice"></span>
+        <span class="rtext">1 个收款方待验证 <span class="rsub">· 验证后方可向其下发</span></span>
+        <button class="btn btn-secondary btn-sm">去验证</button>
+      </div>
+      <div class="req-row">
+        <span class="rdot rdot-notice"></span>
+        <span class="rtext">Bulk Send 尚未完成 Payout 设置 <span class="rsub">· 完成后可批量下发</span></span>
+        <button class="btn btn-secondary btn-sm">去设置</button>
+      </div>
+      <div class="req-row">
+        <span class="rdot rdot-alert"></span>
+        <span class="rtext">1 笔下发失败 · 待风控复核 <span class="rsub">· 末端合作伙伴退回，需补充材料</span></span>
+        <button class="btn btn-secondary btn-sm">去处理</button>
+      </div>
+    </section>
+
+    <!-- ===== 账户余额（操作视角：按形态×归属拆分，含小计，对得上总额） ===== -->
+    <section class="card" style="margin-bottom:16px;">
+      <div class="bal-head">
+        <div class="sec-title" style="margin-bottom:0;">账户余额 · Balances</div>
+        <button class="btn btn-secondary btn-sm">进入余额操作台 →</button>
+      </div>
+
+      <!-- 商户余额：多个 → 列表（摘要 + 查看全部，完整列表/搜索在操作台） -->
+      <div class="bal-sub-head">
+        <div class="bal-sub-title">商户余额 Merchant<span class="agg">合计 <span class="num">$34,560.00</span> · 5 个商户</span></div>
+        <span class="view-all">查看全部 →</span>
+      </div>
+      <div class="bl-row">
+        <div class="bl-main">
+          <div class="bl-name">Acme Pay</div>
+          <div class="bl-meta">M1003<span class="mtag">独立钱包</span></div>
+        </div>
+        <div class="bl-amt"><span class="num">$22,000.00</span><span class="bl-split">Crypto</span></div>
+        <div class="bl-acts"><button class="act-link">收款</button><button class="act-link">充值</button><button class="act-link">出金</button><button class="act-link">划转</button><button class="act-link">明细</button></div>
+      </div>
+      <div class="bl-row">
+        <div class="bl-main">
+          <div class="bl-name">测试商户</div>
+          <div class="bl-meta">M1002<span class="mtag">独立钱包</span></div>
+        </div>
+        <div class="bl-amt"><span class="num">$12,560.00</span><span class="bl-split">Crypto</span></div>
+        <div class="bl-acts"><button class="act-link">收款</button><button class="act-link">充值</button><button class="act-link">出金</button><button class="act-link">划转</button><button class="act-link">明细</button></div>
+      </div>
+      <div class="more-row"><span class="view-all">还有 3 个商户 · 查看全部 →</span></div>
+
+      <!-- 开发者余额：唯一 → 单行 -->
+      <div class="bal-sub-head">
+        <div class="bal-sub-title">开发者余额 Developer<span class="agg">平台自有 / 运营资金 · 唯一</span></div>
+      </div>
+      <div class="bl-row">
+        <div class="bl-main">
+          <div class="bl-name">开发者 Developer</div>
+          <div class="bl-meta">组织层 Organization</div>
+        </div>
+        <div class="bl-amt"><span class="num">$4,360.00</span><span class="bl-split">Crypto</span></div>
+        <div class="bl-acts"><button class="act-link" title="通过结算网络（Settlement Network）获取稳定币">SN 获取</button><button class="act-link">充值</button><button class="act-link">出金</button><button class="act-link">划转</button><button class="act-link">明细</button></div>
+      </div>
+
+      <!-- 法币余额：第一阶段按总额汇总，不按商户拆分（后续将拆分） -->
+      <div class="bal-sub-head">
+        <div class="bal-sub-title">法币余额 Fiat<span class="agg">组织层汇总 · <span class="phase-tag">第一阶段 · 暂不按商户拆分</span></span></div>
+      </div>
+      <div class="bl-row">
+        <div class="bl-main">
+          <div class="bl-name">法币池 Fiat Pool</div>
+          <div class="bl-meta">组织层 Organization</div>
+        </div>
+        <div class="bl-amt"><span class="num">$10,000.00</span><span class="bl-split">Fiat</span></div>
+        <div class="bl-acts"><button class="act-link" title="提现到本人同名账户（Off-ramp，Cobo 直接执行）">提现</button><button class="act-link" title="下发给第三方收款方（Partner Payout，持牌合作方交付）">下发</button><button class="act-link">明细</button></div>
+      </div>
+      <div class="phase-note"><span>ⓘ</span><span>目前法币按总额展示、不按商户拆分；<b style="color:var(--text-primary);">后续将按商户拆分法币余额</b>。</span></div>
+    </section>
+
+    <!-- ===== 近期活动（整宽；业务流小图已撤出工作台，归入空状态/未开通引导） ===== -->
+    <section class="card" style="margin-bottom:16px;">
+      <div class="sec-title">近期活动 · Business Activity</div>
+      <table class="atable">
+        <thead><tr><th>类型</th><th>单号</th><th>金额</th><th>状态</th><th>时间</th></tr></thead>
+        <tbody>
+          <tr><td>Order 收款</td><td>PO-2381</td><td class="num">$1,200.00</td><td><span class="tag tag-green">Completed</span></td><td>10:24</td></tr>
+          <tr><td>Bulk Send 批量</td><td>BS-0044</td><td class="num">$2,320.00</td><td><span class="tag tag-green">Completed</span></td><td>09:58</td></tr>
+          <tr><td>Payout 下发</td><td>PD-0119</td><td class="num">$800.00</td><td><span class="tag tag-orange">Processing</span></td><td>09:31</td></tr>
+          <tr><td>Payout 下发</td><td>PD-0118</td><td class="num">$640.00</td><td><span class="tag tag-red">Failed</span></td><td>08:47</td></tr>
+          <tr><td>Top-up 充值</td><td>TP-0307</td><td class="num">$5,000.00</td><td><span class="tag tag-green">Completed</span></td><td>08:12</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="foot-note">* 数据与待处理项为示例；能力开通门槛（KYB / 收款方验证 / Payout 设置等）最终以真实系统规则为准。</div>
+    </div><!-- /#homeView -->
+  </main>
+</div>
+  <script>
+    var FIAT_BASE = "index.html?embed=1";
+    function _setActive(el){document.querySelectorAll('.sidebar .nav-item').forEach(function(i){i.classList.remove('active');});if(el)el.classList.add('active');}
+    function showFiat(page, el){
+      var f=document.getElementById('fiatFrame');
+      f.src = FIAT_BASE + '&p=' + page + '#' + page;   /* &p= 强制刷新，#page 触发 Fiat 页深链 */
+      f.style.display='block';
+      document.getElementById('homeView').style.display='none';
+      _setActive(el); window.scrollTo(0,0);
+    }
+    function showHome(el){
+      var f=document.getElementById('fiatFrame');
+      f.style.display='none'; f.src='about:blank';
+      document.getElementById('homeView').style.display='block';
+      _setActive(el);
+    }
+  </script>
+</body>
+</html>

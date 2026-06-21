@@ -184,6 +184,11 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 .sb-ic{width:18px;text-align:center;font-size:15px;}
 
 .canvas{flex:1;overflow-y:auto;padding:32px;position:relative;}
+/* 嵌入模式（被大首页 iframe 以 ?embed=1 引用）：隐藏顶栏与左侧导航，只留内容 */
+body.embed .topbar{display:none;}
+body.embed .rail{display:none;}
+body.embed .sidebar{display:none;}
+body.embed .canvas{padding:24px;}
 .pg-title{font-size:20px;font-weight:600;line-height:32px;}
 .pg-sub{font-size:14px;color:var(--t-secondary);margin-top:2px;margin-bottom:28px;}
 
@@ -522,7 +527,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
     <div class="doc-section">
       <div class="doc-sec-num">02 / Payment ↔ Fiat</div>
       <div class="doc-h2">Payment 与 Fiat：同一套系统的前后两段</div>
-      <div class="doc-h2-sub">Cobo Payment（已上线）管「收 + 分账 + off-ramp」，Cobo Fiat in/out（在建）接住 off-ramp 的落点。两者共享同一套商户实体与账本——这正是「同一笔资金全链路可追踪」的地基。</div>
+      <div class="doc-h2-sub">Cobo Payment（已上线）管「收 + 分账 + off-ramp」，Cobo Fiat in/out（在建）接住 off-ramp 的落点。两者共享同一套<strong>商户实体</strong>——这正是「同一笔资金全链路可追踪」的地基。<br><span style="display:inline-block;margin-top:8px;background:#FEDF89;color:#B54708;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;">第一阶段：法币侧为组织级统一池、不按商户拆分；下文「fiat 子账本 / 资金守恒」为后续（商户拆分后）目标模型。</span></div>
 
       <div class="flow-wrap">
         <svg viewBox="0 0 860 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Poppins',sans-serif;">
@@ -554,8 +559,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           <text x="514" y="82" font-size="13" font-weight="700" fill="#1F32D6">COBO FIAT IN/OUT</text>
           <text x="514" y="100" font-size="11" fill="#73798B">在建 · 法币侧</text>
           <rect x="516" y="116" width="308" height="56" rx="8" fill="rgba(31,50,214,.08)" stroke="#1F32D6" stroke-width="1.3"/>
-          <text x="670" y="139" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1F32D6">fiat 子账本</text>
-          <text x="670" y="158" text-anchor="middle" font-size="11" fill="#1F32D6">同一商户实体 · off-ramp 落点</text>
+          <text x="670" y="139" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1F32D6">组织法币池</text>
+          <text x="670" y="158" text-anchor="middle" font-size="11" fill="#1F32D6">off-ramp 落点 · 第一阶段不拆商户</text>
           <path d="M670,172 L670,192" stroke="#73798B" stroke-width="1.2" marker-end="url(#arrx)"/>
           <rect x="516" y="192" width="308" height="42" rx="8" fill="#fff" stroke="#DDE3EE"/>
           <text x="670" y="210" text-anchor="middle" font-size="12" font-weight="500" fill="#1C1C1C">提现 · 打给自己</text>
@@ -585,7 +590,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
 
       <div class="callout" style="background:var(--bg-main);margin-top:16px;">
         <span class="co-ico">🧬</span>
-        <div class="co-body" style="color:var(--t-secondary);"><strong style="color:var(--t-primary);">设计原则：实体归一，账本分段，off-ramp 过账串联。</strong>该归一的是<strong style="color:var(--t-primary);">商户实体</strong>（共享商户 ID、KYB、收款方白名单），不是余额——Payment 侧是加密货币子账本、Fiat 侧是 off-ramp 之后的法币子账本，两者资产类别与守恒规则不同。每一笔 off-ramp = 一次过账：借记该商户在 Payment 的 crypto 子账本、贷记<strong style="color:var(--t-primary);">同一商户 ID</strong> 在 Fiat 的 fiat 子账本——链条天然可追溯，两侧账各自又都正确。</div>
+        <div class="co-body" style="color:var(--t-secondary);"><strong style="color:var(--t-primary);">设计原则：实体归一，off-ramp 过账串联。</strong>该归一的是<strong style="color:var(--t-primary);">商户实体</strong>（共享商户 ID、KYB、收款方白名单），不是余额——Payment 侧按商户记加密货币子账本；<strong style="color:var(--t-primary);">Fiat 侧第一阶段为组织级统一法币池、不按商户拆分</strong>：off-ramp 过账落入组织池，所带的商户 ID 仅作对账标记。<strong style="color:var(--t-primary);">后续</strong>再按商户 ID 把法币拆成 fiat 子账本（届时引入资金守恒）。</div>
       </div>
 
       <div class="doc-p" style="margin-top:24px;"><strong>账本对应关系（脊梁骨）：</strong>同一套结构在加密侧与法币侧的延续。</div>
@@ -594,8 +599,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           <thead><tr><th>Cobo Payment（加密侧 · 已上线）</th><th>Cobo Fiat in/out（法币侧 · 在建）</th><th>关系</th></tr></thead>
           <tbody>
             <tr><td class="name">Developer 账户</td><td class="name">组织层 / 组织未分配 · 自有</td><td class="rel">同一主体</td></tr>
-            <tr><td class="name">Merchant 账户（crypto 子账本）</td><td class="name">商户 fiat 子账本</td><td class="rel">同一商户实体，两段账本</td></tr>
-            <tr><td class="name">自动分账（按 fee rate）</td><td class="name">资金守恒 Σ商户子账本 ≤ 组织余额</td><td class="rel">各自记账规则</td></tr>
+            <tr><td class="name">Merchant 账户（crypto 子账本）</td><td class="name">组织法币池（第一阶段不拆商户；后续按商户拆 fiat 子账本）</td><td class="rel">同一商户实体</td></tr>
+            <tr><td class="name">自动分账（按 fee rate）</td><td class="name">第一阶段组织池统一；后续拆分后引入 Σ商户子账本 ≤ 组织余额</td><td class="rel">各自记账规则</td></tr>
             <tr><td class="name">off-ramp → 外部银行</td><td class="name">提现（外部银行 = 出口之一）</td><td class="rel">合并：off-ramp 落进 Fiat</td></tr>
             <tr><td class="name">Crypto payout / Destination 出款</td><td class="name">下发（第三方 Beneficiary）</td><td class="rel">对应出口</td></tr>
             <tr><td class="name">Destination 白名单（钱包 + 银行）</td><td class="name">My Accounts（同名）+ Beneficiaries</td><td class="rel">同一份白名单</td></tr>
@@ -711,7 +716,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
     <div class="doc-section">
       <div class="doc-sec-num">06 / 资金守恒</div>
       <div class="doc-h2">组织层与商户层的账务关系</div>
-      <div class="doc-h2-sub">组织层持有全部资金，商户子账本是其中「已归属」的部分。两者不必相等，但永远不能倒挂。</div>
+      <div class="doc-h2-sub"><span style="display:inline-block;background:#FEDF89;color:#B54708;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;margin-bottom:8px;">第一阶段：法币为组织级统一池、不按商户拆分；以下守恒为「后续按商户拆分」后的目标模型。</span><br>组织层持有全部资金，商户子账本是其中「已归属」的部分。两者不必相等，但永远不能倒挂。</div>
       <div class="eq-box">
         <div class="eq"><span class="eq-org">组织层余额池</span> &nbsp;=&nbsp; <span class="eq-merch">Σ(各商户子账本)</span> &nbsp;+&nbsp; <span class="eq-free">组织未分配 / 自有资金</span></div>
       </div>
@@ -741,7 +746,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           <div class="src-badge" style="background:var(--tg-blue-b);color:var(--tg-blue-t);">Pay<br>收单</div>
           <div class="src-info">
             <div class="src-name">Payment 收单 · off-ramp 过账</div>
-            <div class="src-desc">商户在 Cobo Payment 收到的稳定币（已在 Merchant 账户分账、经 Screening 完成链上 KYT），经 off-ramp 过账落入本侧 fiat 子账本。串联机制见 02 节。</div>
+            <div class="src-desc">商户在 Cobo Payment 收到的稳定币（已在 Merchant 账户分账、经 Screening 完成链上 KYT），经 off-ramp 过账落入本侧组织法币池（第一阶段不拆商户）。串联机制见 02 节。</div>
           </div>
           <span class="src-meta" style="background:var(--tg-blue-b);color:var(--tg-blue-t);">KYT 完成</span>
         </div>
@@ -787,8 +792,9 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
           </tbody>
         </table>
       </div>
-      <div class="doc-p" style="margin-top:24px;"><strong>余额有两个视角，且组织总额拆成三段。</strong>呼应资金守恒：组织视图看总额（默认），按商户视图把「已归属」部分拆开，差额（未分配 / 自有）必须显式可见，不能藏成对账黑洞。无商户的客户只有组织视图。</div>
-      <div class="bd-bar">
+      <div class="doc-p" style="margin-top:24px;"><strong>第一阶段：法币按组织总额展示，不按商户拆分。</strong>组织视图看总额即可；「按商户拆分」为后续能力——届时差额（未分配 / 自有）须显式可见，不能藏成对账黑洞。</div>
+      <div style="font-size:12px;color:var(--t-secondary);margin-top:8px;margin-bottom:4px;">后续（按商户拆分后）示意，非第一阶段形态：</div>
+      <div class="bd-bar" style="opacity:.55;">
         <div class="bd-seg" style="background:var(--tg-green-t);flex:0 0 33%;">商户 A</div>
         <div class="bd-seg" style="background:#1C6D73;flex:0 0 17%;">商户 B</div>
         <div class="bd-seg" style="background:#067647;flex:0 0 12%;">商户 C</div>
@@ -949,7 +955,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
     <!-- sidebar -->
     <div class="sidebar">
       <div class="sb-group">概览</div>
-      <div class="sb-item active" data-nav="overview" onclick="navTo('overview')"><span class="sb-ic">◉</span> Overview</div>
+      <div class="sb-item active" data-nav="overview" onclick="navTo('overview')"><span class="sb-ic">◉</span> Fiat Overview</div>
       <div class="sb-item" data-nav="convert" onclick="navTo('convert')"><span class="sb-ic">⇄</span> Convert</div>
       <div class="sb-group">记录</div>
       <div class="sb-item" data-nav="wrecords" onclick="navTo('wrecords')"><span class="sb-ic">↑</span> Withdraw Records</div>
@@ -969,29 +975,17 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
         <div class="pg-title">Fiat Overview</div>
         <div class="pg-sub">管理你的法币余额、提现与下发</div>
 
-        <!-- org/merchant view toggle -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-          <div style="display:flex;gap:4px;background:var(--bg-main);border-radius:8px;padding:4px;">
-            <div id="vwOrg" class="ov-tab active" onclick="ovView('org')">组织视图</div>
-            <div id="vwMerch" class="ov-tab" onclick="ovView('merch')">按商户</div>
-          </div>
+        <!-- 第一阶段：法币按组织总额展示，不按商户拆分（移除"按商户"切换） -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;">
+          <div style="font-size:12px;background:#FEF6E9;border:1px solid #FEDF89;color:#B54708;border-radius:6px;padding:6px 10px;">第一阶段：法币按组织总额展示，暂不按商户拆分（后续将按商户拆分）</div>
           <div style="font-size:12px;color:var(--t-secondary);">PSP-SEA Ltd · 组织层</div>
         </div>
 
-        <!-- total balance summary with 3-segment breakdown -->
+        <!-- total balance (组织总额；第一阶段不按商户拆分) -->
         <div class="scard" style="margin-bottom:20px;">
-          <div class="sc-head"><span class="sc-title">组织总余额（USD 等值）</span><span style="font-size:12px;color:var(--t-secondary);">资金守恒 ✓ 商户子账本 ≤ 组织余额</span></div>
+          <div class="sc-head"><span class="sc-title">组织总余额（USD 等值）</span></div>
           <div style="font-size:32px;font-weight:600;letter-spacing:-.5px;" class="num">≈ 4,925,356.00</div>
-          <div class="bd-bar" style="margin-top:18px;">
-            <div class="bd-seg" style="background:var(--tg-green-t);flex:0 0 33%;">商户 A · 400K</div>
-            <div class="bd-seg" style="background:#1C6D73;flex:0 0 16%;">商户 B · 800K</div>
-            <div class="bd-seg" style="background:#067647;flex:0 0 10%;">商户 C · 150K</div>
-            <div class="bd-seg" style="background:var(--notice);flex:1;">组织未分配 / 自有</div>
-          </div>
-          <div class="bd-legend" style="margin-top:4px;">
-            <div class="bd-leg"><span class="bd-dot" style="background:var(--tg-green-t);"></span>已归属商户（子账本之和）</div>
-            <div class="bd-leg"><span class="bd-dot" style="background:var(--notice);"></span>组织未分配 / 自有资金</div>
-          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--t-secondary);">第一阶段法币按组织总额管理，暂不拆分到各商户子账本（后续将拆分）。</div>
         </div>
 
         <div class="layout">
@@ -1052,38 +1046,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
               </div>
             </div>
 
-            <!-- balance cards (MERCHANT VIEW: by merchant sub-ledger) -->
-            <div class="bcards" id="ovMerchCards" style="display:none;">
-              <div class="bcard">
-                <div class="bc-head"><span class="bc-flag" style="background:var(--tg-green-b);color:var(--tg-green-t);font-size:13px;">A</span><span class="bc-ccy">商户 A</span><span class="tag tag-green" style="margin-left:auto;">KYB 已验证</span></div>
-                <div class="bc-availlabel">子账本余额（USD）</div>
-                <div class="bc-avail num">400,000.00</div>
-                <div class="bc-pending"><span class="dot"></span>处理中 12,000.00</div>
-                <div class="bc-va"><div class="bc-va-l"><span class="bc-va-tag">收款地址</span><span class="bc-va-acc">0xAAA...3f9</span></div><span class="bc-va-copy">⧉</span></div>
-                <div class="bc-actions"><button class="btn btn-md btn-ter btn-flex" onclick="navTo('merchants')">查看明细</button><button class="btn btn-md btn-pri btn-flex" onclick="openP(true)">代该商户下发</button></div>
-              </div>
-              <div class="bcard">
-                <div class="bc-head"><span class="bc-flag" style="background:#EDF2F5;color:#1C6D73;font-size:13px;">B</span><span class="bc-ccy">商户 B</span><span class="tag tag-orange" style="margin-left:auto;">KYB 审核中</span></div>
-                <div class="bc-availlabel">子账本余额（HKD）</div>
-                <div class="bc-avail num">800,000.00</div>
-                <div class="bc-pending" style="color:var(--t-tertiary);">无处理中交易</div>
-                <div class="bc-va"><div class="bc-va-l"><span class="bc-va-tag">收款地址</span><span class="bc-va-acc">0xBBB...7c2</span></div><span class="bc-va-copy">⧉</span></div>
-                <div class="bc-actions"><button class="btn btn-md btn-ter btn-flex" onclick="navTo('merchants')">查看明细</button><button class="btn btn-md btn-pri btn-flex" style="opacity:.5;cursor:not-allowed;" title="KYB 审核中，暂不可下发">代该商户下发</button></div>
-              </div>
-              <div class="bcard">
-                <div class="bc-head"><span class="bc-flag" style="background:#E4F5EB;color:#067647;font-size:13px;">C</span><span class="bc-ccy">商户 C</span><span class="tag tag-green" style="margin-left:auto;">KYB 已验证</span></div>
-                <div class="bc-availlabel">子账本余额（SGD）</div>
-                <div class="bc-avail num">150,000.00</div>
-                <div class="bc-pending" style="color:var(--t-tertiary);">无处理中交易</div>
-                <div class="bc-va"><div class="bc-va-l"><span class="bc-va-tag">收款地址</span><span class="bc-va-acc">0xCCC...1a8</span></div><span class="bc-va-copy">⧉</span></div>
-                <div class="bc-actions"><button class="btn btn-md btn-ter btn-flex" onclick="navTo('merchants')">查看明细</button><button class="btn btn-md btn-pri btn-flex" onclick="openP(true)">代该商户下发</button></div>
-              </div>
-              <div class="bcard" style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px dashed var(--t-tertiary);background:transparent;">
-                <div style="font-size:24px;color:var(--t-tertiary);margin-bottom:8px;">+</div>
-                <div style="font-size:13px;font-weight:500;color:var(--t-secondary);">添加商户</div>
-                <div style="font-size:11px;color:var(--t-tertiary);margin-top:4px;">含商户 KYB 录入</div>
-              </div>
-            </div>
+            <!-- 按商户法币子账本视图已移除（第一阶段法币不拆商户；后续将按商户拆分） -->
 
             <!-- in progress -->
             <div class="scard">
@@ -1133,7 +1096,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
                   <div class="lrow-ico ico-va">VA</div>
                   <div><div class="lrow-name" style="color:var(--alert);">直接向 VA 充值法币</div><div class="lrow-sub">从外部电汇法币进入 VA 账户</div></div>
                 </div>
-                <div class="lrow-r"><span class="tag tag-red">⚠ 需 MSB / SRO 牌照</span></div>
+                <div class="lrow-r"><span class="tag tag-orange">暂未开放 · 能力建设中</span></div>
               </div>
             </div>
           </div>
@@ -1285,7 +1248,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
         </div>
         <div class="dtable-wrap" style="margin-bottom:24px;">
           <table class="dtable">
-            <thead><tr><th>商户</th><th>类型</th><th>国家</th><th class="right">子账本余额</th><th>收款地址</th><th>KYB 状态</th><th class="right">操作</th></tr></thead>
+            <thead><tr><th>商户</th><th>类型</th><th>国家</th><th>收款地址</th><th>KYB 状态</th><th class="right">操作</th></tr></thead>
             <tbody id="merchantRows"></tbody>
           </table>
         </div>
@@ -1457,7 +1420,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
       <div data-step="p1">
         <div class="field">
           <label class="flbl">代表商户 <span style="color:var(--t-tertiary);">（可选 · 无商户客户可留空，归组织自身）</span></label>
-          <select class="fsel" id="pMerchSel"><option>商户 A · Lazada-VN（子账本 USD 400,000）</option><option>商户 B · Shopee-TH（KYB 审核中，暂不可选）</option><option>商户 C · 自营电商（子账本 SGD 150,000）</option><option>不指定商户（组织自身）</option></select>
+          <select class="fsel" id="pMerchSel"><option>商户 A · Lazada-VN</option><option>商户 B · Shopee-TH（KYB 审核中，暂不可选）</option><option>商户 C · 自营电商</option><option>不指定商户（组织自身）</option></select>
         </div>
         <div class="field">
           <label class="flbl">来源余额</label>
@@ -1499,8 +1462,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg-card);color:var(--t-pr
       </div>
       <div data-step="p3">
         <div class="sumbox">
-          <div class="sumrow"><span class="sumk">代表商户</span><span class="sumv">商户 A · Lazada-VN<span class="sub">子账本将扣减 USD 50,000</span></span></div>
-          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat in/out · USD 余额（商户 A 归属）</span></div>
+          <div class="sumrow"><span class="sumk">代表商户</span><span class="sumv">商户 A · Lazada-VN<span class="sub">用于对账归属（第一阶段法币不拆子账本）</span></span></div>
+          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat in/out · 组织 USD 法币池</span></div>
           <div class="sumrow"><span class="sumk">收款方</span><span class="sumv">供应商 X 物流<span class="sub">越南银行 · ****8821</span></span></div>
           <div class="sumrow"><span class="sumk">下发金额</span><span class="sumv amt">USD 50,000.00</span></div>
           <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 80.00</span></div>
@@ -1590,6 +1553,14 @@ function navTo(page){
 }
 // init overview visible
 document.querySelector('[data-page="overview"]').classList.add('active');
+/* 嵌入 / 深链：?embed 隐藏外壳；#<page> 切到交互原型并直达对应页 */
+(function(){
+  var emb=location.search.indexOf('embed')>=0; if(emb) document.body.classList.add('embed');
+  var pt=document.querySelectorAll('.tb-tab')[1];
+  var p=location.hash?location.hash.slice(1):'';
+  if(p&&document.querySelector('[data-page="'+p+'"]')){ switchView('proto',pt); navTo(p); }
+  else if(emb){ switchView('proto',pt); }
+})();
 
 /* ===== overview org/merchant view ===== */
 function ovView(v){
@@ -1820,7 +1791,6 @@ function renderMerchants(){
     <tr onclick="navTo('merchants')">
       <td><div style="display:flex;align-items:center;gap:10px;"><span class="acc-av" style="width:30px;height:30px;font-size:12px;background:${mColor[r[0]][0]};color:${mColor[r[0]][1]};">${r[0]}</span><span class="td-strong">${r[1]}</span></div></td>
       <td>${r[2]}</td><td>${r[3]}</td>
-      <td class="right"><span class="td-amt" style="font-size:13px;">${r[4]}</span></td>
       <td class="td-id">${r[5]}</td>
       <td><span class="st st-${r[6]==='success'?'success':'process'}"><span class="st-dot"></span>${r[7]}</span></td>
       <td class="right"><span class="td-action">详情</span></td>
