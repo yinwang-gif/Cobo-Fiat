@@ -10,6 +10,7 @@
 <style>
   :root{
     --brand:#1F32D6;          /* Color/Brand/Main */
+    --brand-10:rgba(31,50,214,.10); /* Color/Brand/Main-10% */
     --brand-hover:#131E80;    /* Cmpt/Hover-1 */
     --bg-card:#EDEEF3;        /* Bg/Card 页面画布 */
     --bg-main:#FFFFFF;        /* Bg/Main 卡片 */
@@ -95,7 +96,7 @@
   .btn-primary:hover{background:var(--brand-hover);}
   .btn-primary:focus{outline:2px solid var(--brand);outline-offset:2px;}
   .btn-secondary{background:transparent;color:var(--brand);border:1px solid var(--brand);}
-  .btn-secondary:hover{background:#F4F5FE;}
+  .btn-secondary:hover{background:var(--brand-10);}
   .btn-tertiary{background:var(--bg-card);color:var(--text-primary);}
   .btn-tertiary:hover{background:var(--hover3);}
   .btn-sm{height:28px;padding:0 12px;font-size:12px;border-radius:4px;}
@@ -126,7 +127,7 @@
   .bal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
   .acts{display:flex;gap:4px;flex-wrap:wrap;}
   .act-link{background:transparent;border:none;color:var(--brand);font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;line-height:20px;cursor:pointer;padding:2px 6px;border-radius:4px;}  /* 行内操作 */
-  .act-link:hover{background:#F4F5FE;}
+  .act-link:hover{background:var(--brand-10);}
   .act-link-gated{color:#B54708;background:#FEDF89;border:1px solid #FEDF89;font-weight:600;padding:2px 8px;}  /* Tag/Orange：需开通状态 */
   .act-link-gated:hover{background:#FEDF89;border-color:var(--notice);color:#B54708;}
   /* 行内「出金 ▾」分组下拉 */
@@ -136,6 +137,7 @@
   .opmenu-pop{position:absolute;right:0;top:100%;margin-top:6px;background:var(--bg-main);border:1px solid var(--divider);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.08);padding:8px;min-width:230px;z-index:30;text-align:left;}
   .opmenu-pop .opg{font-size:11px;font-weight:600;color:var(--text-secondary);padding:8px 8px 2px;}
   .opmenu-pop .opi{display:block;font-size:13px;font-weight:500;color:var(--text-primary);padding:7px 8px 7px 16px;border-radius:6px;cursor:pointer;text-decoration:none;}
+  .opmenu-pop button.opi{width:100%;border:none;background:transparent;text-align:left;font-family:'Poppins',sans-serif;}
   .opmenu-pop .opi:hover{background:var(--hover2);}
   .opmenu-pop .ops{font-size:11px;font-weight:400;color:var(--text-tertiary);margin-left:4px;}
   .opmenu-pop .opg.divide{border-top:1px solid var(--divider);margin-top:4px;padding-top:8px;}
@@ -167,7 +169,7 @@
   .tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;line-height:16px;padding:2px 8px;border-radius:4px;}
   .tag-green{color:#067647;background:#E4F5EB;}
   .tag-orange{color:#B54708;background:#FEDF89;}
-  .tag-red{color:#B42318;background:#FEE4E2;}  /* Failed 红色：规范示例要求 Failed=红，但 Tag 色表未列红对，待设计确认 token */
+  .tag-red{color:var(--alert);background:var(--bg-main);border:1px solid var(--alert);}  /* Color/State/Alert */
 
   /* 能力地图（降级小模块） */
   .flowmod{flex:1;}
@@ -179,6 +181,125 @@
   .mini-ops{margin-top:12px;font-size:12px;color:var(--text-secondary);text-align:center;line-height:18px;}
 
   .foot-note{font-size:12px;font-weight:400;line-height:20px;color:var(--text-tertiary);padding:8px 4px 0;}
+  .module-toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(12px);z-index:130;min-width:280px;max-width:520px;background:var(--text-primary);color:var(--text-white);border-radius:10px;padding:12px 16px;font-size:12px;font-weight:400;line-height:20px;opacity:0;pointer-events:none;transition:opacity .16s,transform .16s;}
+  .module-toast.open{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* Account Detail Views */
+  .detail-view{display:none;}
+  .detail-view.active{display:block;}
+  .detail-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .crumb{font-size:20px;font-weight:600;line-height:32px;display:flex;align-items:center;gap:8px;}
+  .crumb .muted{color:var(--text-tertiary);font-weight:400;}
+  .detail-card{background:var(--bg-main);border:1px solid var(--divider);border-radius:10px;padding:16px;margin-bottom:24px;}
+  .summary-strip{display:flex;align-items:center;justify-content:space-between;background:var(--hover2);border:1px solid var(--divider);border-radius:10px;padding:16px 24px;margin-bottom:24px;}
+  .summary-main .summary-name{font-size:18px;font-weight:600;line-height:28px;}
+  .summary-main .summary-sub{font-size:12px;font-weight:400;line-height:20px;color:var(--text-secondary);margin-top:4px;}
+  .summary-meta{display:flex;align-items:center;gap:16px;}
+  .summary-kv{font-size:12px;font-weight:500;line-height:20px;color:var(--text-secondary);}
+  .summary-kv .num{font-size:18px;font-weight:600;color:var(--text-primary);margin-left:8px;}
+  .asset-list{border:1px solid var(--divider);border-radius:10px;overflow:hidden;margin-bottom:24px;background:var(--bg-main);}
+  .asset-group{display:flex;align-items:center;justify-content:space-between;background:var(--hover2);padding:16px 24px;border-bottom:1px solid var(--divider);}
+  .asset-left{display:flex;align-items:center;gap:12px;min-width:0;}
+  .asset-icon{width:36px;height:36px;border-radius:50%;background:var(--success);color:var(--text-white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+  .asset-name{font-size:16px;font-weight:600;line-height:24px;}
+  .asset-sub{font-size:12px;font-weight:400;line-height:20px;color:var(--text-secondary);}
+  .asset-tag{font-size:10px;font-weight:600;line-height:16px;padding:2px 8px;border-radius:4px;color:#363F72;background:#F1F1F5;} /* Tag/Grey */
+  .asset-total{text-align:right;font-size:16px;font-weight:600;line-height:24px;}
+  .asset-total .approx{display:block;font-size:12px;font-weight:400;line-height:20px;color:var(--text-secondary);}
+  .asset-row{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--line-table);}
+  .asset-row:last-child{border-bottom:none;}
+  .asset-amount{text-align:right;font-size:14px;font-weight:600;line-height:22px;min-width:140px;}
+  .asset-actions{display:flex;gap:8px;margin-left:16px;}
+  .seg-tabs{display:flex;align-items:center;gap:24px;margin-bottom:16px;border-bottom:1px solid var(--divider);}
+  .seg-tab{height:44px;border:none;background:transparent;color:var(--text-secondary);font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;line-height:22px;cursor:pointer;padding:0 8px;border-bottom:2px solid transparent;}
+  .seg-tab.active{color:var(--text-primary);border-bottom-color:var(--brand);}
+  .tool-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
+  .searchbox{height:40px;border:1px solid var(--divider);border-radius:6px;background:var(--bg-main);display:flex;align-items:center;gap:8px;padding:0 12px;min-width:360px;color:var(--text-tertiary);font-size:14px;font-weight:400;}
+  .toolbar-actions{display:flex;align-items:center;gap:8px;}
+  .data-table{width:100%;border-collapse:collapse;}
+  .data-table th{height:44px;background:var(--bg-card);text-align:left;font-size:14px;font-weight:500;color:var(--text-secondary);padding:0 16px;}
+  .data-table td{height:68px;border-top:1px solid var(--line-table);font-size:14px;font-weight:400;line-height:22px;padding:0 16px;}
+  .data-table tr:hover td{background:var(--hover2);}
+  .td-strong{font-weight:600;}
+  .empty-state{height:180px;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);font-size:14px;font-weight:400;}
+  .fiat-balance-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;border:1px solid var(--divider);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+  .fiat-cell{padding:16px 24px;border-right:1px solid var(--divider);font-size:14px;font-weight:600;line-height:22px;}
+  .fiat-cell:last-child{border-right:none;}
+  .fiat-cell.head{background:var(--hover2);color:var(--text-secondary);font-weight:500;}
+  .contract-id{font-weight:600;white-space:nowrap;}
+  .copy-dot{display:inline-block;width:14px;height:14px;border:1px solid var(--text-tertiary);border-radius:4px;margin-left:8px;vertical-align:-2px;}
+
+  /* Transaction Pages and Dialogs */
+  .bulk-page{background:var(--bg-main);border-radius:10px;padding:24px;}
+  .notice-line{display:flex;align-items:flex-start;gap:12px;background:#E4F5EB;color:#067647;border-radius:6px;padding:12px 16px;font-size:14px;font-weight:500;line-height:22px;margin-bottom:24px;} /* Tag/Green */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+  .field-label{font-size:14px;font-weight:500;line-height:22px;margin-bottom:8px;}
+  .field-box{height:48px;border:1px solid var(--divider);border-radius:6px;background:var(--bg-main);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:14px;font-weight:500;color:var(--text-primary);}
+  .field-box.placeholder{color:var(--text-tertiary);font-weight:400;}
+  .field-box:focus-within{border-color:var(--brand);}
+  .field-input{border:none;outline:none;font-family:'Poppins',sans-serif;font-size:14px;font-weight:400;line-height:22px;width:100%;background:transparent;color:var(--text-primary);}
+  .recipient-card{border:1px solid var(--divider);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+  .recipient-head{display:flex;align-items:center;justify-content:space-between;background:var(--hover2);padding:12px 16px;border-bottom:1px solid var(--divider);}
+  .recipient-grid{display:grid;grid-template-columns:32px 2fr 1fr 1.6fr 24px;gap:16px;align-items:end;padding:16px;background:var(--bg-main);}
+  .recipient-row-index{font-size:14px;font-weight:500;color:var(--text-secondary);padding-bottom:12px;}
+  .bottom-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--divider);padding-top:16px;}
+  .radio-line{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:400;color:var(--text-primary);}
+  .fake-radio{display:inline-flex;align-items:center;gap:8px;}
+  .fake-radio::before{content:'';width:14px;height:14px;border:1px solid var(--text-tertiary);border-radius:50%;display:inline-block;}
+  .flow-mask{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(28,28,28,.4);padding:24px;}
+  .flow-mask.open{display:flex;}
+  .flow-dialog{width:760px;max-width:100%;max-height:calc(100vh - 48px);background:var(--bg-main);border:1px solid var(--divider);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+  .flow-dialog.wide{width:920px;}
+  .flow-head{display:flex;align-items:flex-start;justify-content:space-between;padding:24px 24px 0;}
+  .flow-title{font-size:24px;font-weight:600;line-height:32px;}
+  .flow-close{width:32px;height:32px;border:none;border-radius:50%;background:var(--hover2);color:var(--text-secondary);font-size:18px;cursor:pointer;}
+  .flow-close:hover{background:var(--hover3);}
+  .flow-body{padding:24px;overflow:auto;}
+  .flow-section{margin-bottom:24px;}
+  .account-block{background:var(--brand-10);border-radius:6px;padding:16px;font-size:18px;font-weight:600;line-height:28px;margin-top:8px;}
+  .recipient-box{border:1px solid var(--divider);border-radius:10px;padding:16px;margin-top:8px;}
+  .recipient-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .protect-tag{font-size:14px;font-weight:500;line-height:22px;color:#067647;background:#E4F5EB;border-radius:6px;padding:4px 12px;} /* Tag/Green */
+  .send-row{display:grid;grid-template-columns:220px 1fr;gap:16px;}
+  .amount-box{border:1px solid var(--divider);border-radius:10px;padding:16px;min-height:104px;}
+  .amount-head{display:flex;align-items:center;justify-content:space-between;color:var(--text-secondary);font-size:14px;font-weight:500;line-height:22px;margin-bottom:16px;}
+  .amount-input{border:none;outline:none;width:100%;font-family:'Poppins',sans-serif;font-size:18px;font-weight:500;line-height:28px;color:var(--text-primary);background:transparent;}
+  .memo-box{height:104px;border:1px solid var(--divider);border-radius:6px;padding:12px;font-family:'Poppins',sans-serif;font-size:14px;line-height:22px;color:var(--text-primary);resize:none;width:100%;}
+  .route-choice{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;}
+  .choice-card{border:1px solid var(--divider);border-radius:10px;padding:16px;min-height:84px;}
+  .choice-card.selected{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand);}
+  .choice-title{font-size:14px;font-weight:600;line-height:22px;}
+  .choice-sub{font-size:12px;font-weight:400;line-height:20px;color:var(--text-secondary);margin-top:4px;}
+  .flow-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 24px 24px;border-top:1px solid var(--divider);}
+  .btn-disabled{background:var(--brand-10);color:var(--text-white);cursor:not-allowed;}
+  a.btn{text-decoration:none;}
+  .list-card{background:var(--bg-main);border:1px solid var(--divider);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+  .list-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;border-bottom:1px solid var(--divider);}
+  .payer-id{font-weight:600;line-height:22px;}
+  .payer-sub{font-size:12px;font-weight:400;line-height:20px;color:var(--text-secondary);margin-top:4px;}
+  .icon-action{width:32px;height:32px;border:1px solid var(--divider);border-radius:50%;background:var(--bg-main);color:var(--text-primary);font-size:14px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:8px;}
+  .icon-action:hover{background:var(--hover2);}
+  .pager{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;color:var(--text-secondary);font-size:14px;font-weight:400;}
+  .address-title-head{border-bottom:1px solid var(--divider);padding-bottom:16px;margin-bottom:24px;}
+  .address-title-head .crumb{font-size:24px;line-height:32px;}
+  .address-book-card{background:var(--bg-main);}
+  .address-book-card .list-toolbar{border-bottom:none;}
+  .address-count{font-size:18px;font-weight:600;line-height:28px;padding:8px 24px 24px;}
+  .address-count .num{font-size:18px;font-weight:600;}
+  .payer-address-row{display:flex;align-items:center;justify-content:space-between;gap:24px;border-top:1px solid var(--divider);padding:24px;background:var(--bg-main);}
+  .payer-address-row:hover{background:var(--hover2);}
+  .chain-icon{width:28px;height:28px;border-radius:50%;background:var(--alert);color:var(--text-white);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;line-height:16px;flex-shrink:0;}
+  .address-full{font-size:16px;font-weight:600;line-height:24px;word-break:break-all;margin-bottom:8px;}
+  .address-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .address-actions .icon-action{margin-left:0;}
+  .address-empty{display:none;align-items:center;justify-content:center;min-height:120px;border-top:1px solid var(--divider);color:var(--text-tertiary);font-size:14px;font-weight:400;line-height:22px;}
+  .address-empty.visible{display:flex;}
+  .modal-grid{display:grid;grid-template-columns:1fr;gap:24px;}
+  .input-shell{height:48px;border:1px solid var(--divider);border-radius:6px;background:var(--bg-main);display:flex;align-items:center;justify-content:space-between;padding:0 16px;}
+  .input-shell.tall{height:64px;}
+  .input-value{font-size:16px;font-weight:500;line-height:24px;}
+  .input-sub{font-size:12px;font-weight:400;line-height:20px;color:var(--text-secondary);margin-top:2px;}
+  .clear-icon{width:18px;height:18px;border-radius:50%;background:var(--text-secondary);color:var(--text-white);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
 
   /* SN 获取未开通引导 Dialog */
   .sn-mask{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(28,28,28,.4);padding:24px;}
@@ -228,36 +349,36 @@
     <h1>Payment</h1>
     <div class="nav-group">
       <div class="gl">概览</div>
-      <div class="nav-item active" onclick="showHome(this)"><span class="dot"></span>Home 工作台</div>
-      <div class="nav-item" onclick="showHome(this)"><span class="dot"></span>Balances 余额</div>
+      <div class="nav-item active" data-home="top" onclick="showHome(this)"><span class="dot"></span>Home 工作台</div>
+      <div class="nav-item" data-home="balances" onclick="showHome(this,'balancesSection')"><span class="dot"></span>Balances 余额</div>
     </div>
     <div class="nav-group">
       <div class="gl">法币 Fiat</div>
-      <div class="nav-item" onclick="showFiat('overview',this)"><span class="dot"></span>Fiat Overview</div>
-      <div class="nav-item" onclick="showFiat('convert',this)"><span class="dot"></span>Convert 换汇</div>
-      <div class="nav-item" onclick="showFiat('wrecords',this)"><span class="dot"></span>Withdraw 提现记录</div>
-      <div class="nav-item" onclick="showFiat('precords',this)"><span class="dot"></span>Payout 下发记录</div>
-      <div class="nav-item" onclick="showFiat('accounts',this)"><span class="dot"></span>My Accounts 同名账户</div>
-      <div class="nav-item" onclick="showFiat('orgkyb',this)"><span class="dot"></span>Organization KYB</div>
-      <div class="nav-item" onclick="showFiat('merchants',this)"><span class="dot"></span>Merchants 商户</div>
-      <div class="nav-item" onclick="showFiat('beneficiaries',this)"><span class="dot"></span>Beneficiaries 收款方</div>
+      <div class="nav-item" data-fiat="overview" onclick="showFiat('overview',this)"><span class="dot"></span>Fiat Overview</div>
+      <div class="nav-item" data-fiat="convert" onclick="showFiat('convert',this)"><span class="dot"></span>Convert 换汇</div>
+      <div class="nav-item" data-fiat="wrecords" onclick="showFiat('wrecords',this)"><span class="dot"></span>Withdraw 提现记录</div>
+      <div class="nav-item" data-fiat="precords" onclick="showFiat('precords',this)"><span class="dot"></span>Payout 下发记录</div>
+      <div class="nav-item" data-fiat="accounts" onclick="showFiat('accounts',this)"><span class="dot"></span>My Accounts 同名账户</div>
+      <div class="nav-item" data-fiat="orgkyb" onclick="showFiat('orgkyb',this)"><span class="dot"></span>Organization KYB</div>
+      <div class="nav-item" data-fiat="merchants" onclick="showFiat('merchants',this)"><span class="dot"></span>Merchants 商户</div>
+      <div class="nav-item" data-fiat="beneficiaries" onclick="showFiat('beneficiaries',this)"><span class="dot"></span>Beneficiaries 收款方</div>
     </div>
     <div class="nav-group">
       <div class="gl">收款 Inflow</div>
-      <div class="nav-item"><span class="dot"></span>Pay-in 收款订单</div>
-      <div class="nav-item"><span class="dot"></span>Top-up 充值</div>
+      <div class="nav-item" data-module="payins" onclick="openModule('payins')"><span class="dot"></span>Pay-in 收款订单</div>
+      <div class="nav-item" data-module="topup" onclick="openModule('topup')"><span class="dot"></span>Top-up 充值</div>
     </div>
     <div class="nav-group">
       <div class="gl">下发 Outflow</div>
-      <div class="nav-item"><span class="dot"></span>Payout 下发</div>
-      <div class="nav-item"><span class="dot"></span>Bulk Send 批量下发</div>
+      <div class="nav-item" data-module="payout" onclick="openModule('payout')"><span class="dot"></span>Payout 下发</div>
+      <div class="nav-item" data-module="bulk" onclick="openModule('bulk')"><span class="dot"></span>Bulk Send 批量下发</div>
     </div>
     <div class="nav-group">
       <div class="gl">管理 Operations</div>
-      <div class="nav-item"><span class="dot"></span>Allocate 余额分配</div>
-      <div class="nav-item"><span class="dot"></span>Merchants 商户</div>
-      <div class="nav-item"><span class="dot"></span>Activities 资金活动</div>
-      <div class="nav-item"><span class="dot"></span>Reports 报表</div>
+      <div class="nav-item" data-module="allocate" onclick="openModule('allocate')"><span class="dot"></span>Allocate 余额分配</div>
+      <div class="nav-item" data-module="merchants" onclick="openModule('merchants')"><span class="dot"></span>Merchants 商户</div>
+      <div class="nav-item" data-module="activities" onclick="openModule('activities')"><span class="dot"></span>Activities 资金活动</div>
+      <div class="nav-item" data-module="reports" onclick="openModule('reports')"><span class="dot"></span>Reports 报表</div>
     </div>
     <div class="nav-group">
       <div class="gl">Settlement Network<span class="new-badge">新</span></div>
@@ -310,11 +431,11 @@
 
       <section class="card quick">
         <div class="qa-label">快捷操作 Quick Actions</div>
-        <button class="btn btn-primary"><span class="bi">＋</span>Create Order</button>
-        <button class="btn btn-tertiary"><span class="bi">↓</span>Top-up</button>
-        <button class="btn btn-tertiary"><span class="bi">➤</span>Payout</button>
-        <button class="btn btn-tertiary"><span class="bi">⇉</span>Bulk Send</button>
-        <button class="btn btn-tertiary"><span class="bi">⇄</span>Allocate</button>
+        <button class="btn btn-primary" onclick="openModule('payins')"><span class="bi">＋</span>Create Order</button>
+        <button class="btn btn-tertiary" onclick="openModule('topup')"><span class="bi">↓</span>Top-up</button>
+        <button class="btn btn-tertiary" onclick="openCryptoPayout()"><span class="bi">➤</span>Payout</button>
+        <button class="btn btn-tertiary" onclick="showBulkSend()"><span class="bi">⇉</span>Bulk Send</button>
+        <button class="btn btn-tertiary" onclick="openTransferDialog()"><span class="bi">⇄</span>Allocate</button>
       </section>
     </div>
 
@@ -328,36 +449,36 @@
       <div class="req-row">
         <span class="rdot rdot-notice"></span>
         <span class="rtext">2 个商户待 KYB 审核 <span class="rsub">· 通过后这些商户方可收款</span></span>
-        <button class="btn btn-secondary btn-sm">去审核</button>
+        <button class="btn btn-secondary btn-sm" onclick="showFiat('merchants',navForFiat('merchants'))">去审核</button>
       </div>
       <div class="req-row">
         <span class="rdot rdot-notice"></span>
         <span class="rtext">1 个收款方待验证 <span class="rsub">· 验证后方可向其下发</span></span>
-        <button class="btn btn-secondary btn-sm">去验证</button>
+        <button class="btn btn-secondary btn-sm" onclick="showFiat('beneficiaries',navForFiat('beneficiaries'))">去验证</button>
       </div>
       <div class="req-row">
         <span class="rdot rdot-notice"></span>
         <span class="rtext">Bulk Send 尚未完成 Payout 设置 <span class="rsub">· 完成后可批量下发</span></span>
-        <button class="btn btn-secondary btn-sm">去设置</button>
+        <button class="btn btn-secondary btn-sm" onclick="openCryptoPayout()">去设置</button>
       </div>
       <div class="req-row">
         <span class="rdot rdot-alert"></span>
         <span class="rtext">1 笔下发失败 · 待风控复核 <span class="rsub">· 末端合作伙伴退回，需补充材料</span></span>
-        <button class="btn btn-secondary btn-sm">去处理</button>
+        <button class="btn btn-secondary btn-sm" onclick="showFiat('precords',navForFiat('precords'))">去处理</button>
       </div>
     </section>
 
     <!-- ===== 账户余额（操作视角：按形态×归属拆分，含小计，对得上总额） ===== -->
-    <section class="card" style="margin-bottom:16px;">
+    <section class="card" id="balancesSection" style="margin-bottom:16px;">
       <div class="bal-head">
         <div class="sec-title" style="margin-bottom:0;">账户余额 · Balances</div>
-        <button class="btn btn-secondary btn-sm">进入余额操作台 →</button>
+        <button class="btn btn-secondary btn-sm" onclick="showCryptoDetail()">进入余额操作台 →</button>
       </div>
 
       <!-- 商户余额：多个 → 列表（摘要 + 查看全部，完整列表/搜索在操作台） -->
       <div class="bal-sub-head">
         <div class="bal-sub-title">商户余额 Merchant<span class="agg">合计 <span class="num">$34,560.00</span> · 5 个商户</span></div>
-        <span class="view-all">查看全部 →</span>
+        <span class="view-all" onclick="showCryptoDetail()">查看全部 →</span>
       </div>
       <div class="bl-row">
         <div class="bl-main">
@@ -366,19 +487,19 @@
         </div>
         <div class="bl-amt"><span class="num">$22,000.00</span><span class="bl-split">Crypto</span></div>
         <div class="bl-acts">
-          <button class="act-link">收款</button>
-          <button class="act-link">充值</button>
+          <button class="act-link" onclick="openModule('payins')">收款</button>
+          <button class="act-link" onclick="openModule('topup')">充值</button>
           <details class="opmenu"><summary class="act-link">出金 ▾</summary>
             <div class="opmenu-pop">
               <div class="opg">加密出金 Crypto</div>
-              <a class="opi">单笔<span class="ops">Payout</span></a>
-              <a class="opi">批量<span class="ops">Bulk Send</span></a>
+              <button class="opi" onclick="openCryptoPayout()">单笔<span class="ops">Payout</span></button>
+              <button class="opi" onclick="showBulkSend()">批量<span class="ops">Bulk Send</span></button>
               <div class="opg divide">法币出金 · Off-ramp</div>
-              <a class="opi">选收款方后自动路由 →</a>
+              <button class="opi" onclick="openOffRampDialog()">选收款方后自动路由 →</button>
             </div>
           </details>
-          <button class="act-link">划转</button>
-          <button class="act-link">明细</button>
+          <button class="act-link" onclick="openTransferDialog()">划转</button>
+          <button class="act-link" onclick="showCryptoDetail()">明细</button>
         </div>
       </div>
       <div class="bl-row">
@@ -388,22 +509,22 @@
         </div>
         <div class="bl-amt"><span class="num">$12,560.00</span><span class="bl-split">Crypto</span></div>
         <div class="bl-acts">
-          <button class="act-link">收款</button>
-          <button class="act-link">充值</button>
+          <button class="act-link" onclick="openModule('payins')">收款</button>
+          <button class="act-link" onclick="openModule('topup')">充值</button>
           <details class="opmenu"><summary class="act-link">出金 ▾</summary>
             <div class="opmenu-pop">
               <div class="opg">加密出金 Crypto</div>
-              <a class="opi">单笔<span class="ops">Payout</span></a>
-              <a class="opi">批量<span class="ops">Bulk Send</span></a>
+              <button class="opi" onclick="openCryptoPayout()">单笔<span class="ops">Payout</span></button>
+              <button class="opi" onclick="showBulkSend()">批量<span class="ops">Bulk Send</span></button>
               <div class="opg divide">法币出金 · Off-ramp</div>
-              <a class="opi">选收款方后自动路由 →</a>
+              <button class="opi" onclick="openOffRampDialog()">选收款方后自动路由 →</button>
             </div>
           </details>
-          <button class="act-link">划转</button>
-          <button class="act-link">明细</button>
+          <button class="act-link" onclick="openTransferDialog()">划转</button>
+          <button class="act-link" onclick="showCryptoDetail()">明细</button>
         </div>
       </div>
-      <div class="more-row"><span class="view-all">还有 3 个商户 · 查看全部 →</span></div>
+      <div class="more-row"><span class="view-all" onclick="openModule('merchants')">还有 3 个商户 · 查看全部 →</span></div>
 
       <!-- 开发者余额：唯一 → 单行 -->
       <div class="bal-sub-head">
@@ -420,14 +541,14 @@
           <details class="opmenu"><summary class="act-link">出金 ▾</summary>
             <div class="opmenu-pop">
               <div class="opg">加密出金 Crypto</div>
-              <a class="opi">单笔<span class="ops">Payout</span></a>
-              <a class="opi">批量<span class="ops">Bulk Send</span></a>
+              <button class="opi" onclick="openCryptoPayout()">单笔<span class="ops">Payout</span></button>
+              <button class="opi" onclick="showBulkSend()">批量<span class="ops">Bulk Send</span></button>
               <div class="opg divide">法币出金 · Off-ramp</div>
-              <a class="opi">选收款方后自动路由 →</a>
+              <button class="opi" onclick="openOffRampDialog()">选收款方后自动路由 →</button>
             </div>
           </details>
-          <button class="act-link">划转</button>
-          <button class="act-link">明细</button>
+          <button class="act-link" onclick="openTransferDialog()">划转</button>
+          <button class="act-link" onclick="showCryptoDetail()">明细</button>
         </div>
       </div>
 
@@ -442,8 +563,8 @@
         </div>
         <div class="bl-amt"><span class="num">$10,000.00</span><span class="bl-split">Fiat</span></div>
         <div class="bl-acts">
-          <button class="act-link" title="已是法币、不经 off-ramp；选收款方后自动路由：本人同名账户走提现、第三方走下发">法币出金</button>
-          <button class="act-link">明细</button>
+          <button class="act-link" onclick="openOffRampDialog()" title="已是法币、不经 off-ramp；选收款方后自动路由：本人同名账户走提现、第三方走下发">法币出金</button>
+          <button class="act-link" onclick="showFiatDetail()">明细</button>
         </div>
       </div>
       <div class="phase-note"><span>ⓘ</span><span>目前法币按总额展示、不按商户拆分；<b style="color:var(--text-primary);">后续将按商户拆分法币余额</b>。</span></div>
@@ -466,6 +587,207 @@
 
     <div class="foot-note">* 数据与待处理项为示例；能力开通门槛（KYB / 收款方验证 / Payout 设置等）最终以真实系统规则为准。</div>
     </div><!-- /#homeView -->
+
+    <div class="detail-view" id="cryptoDetailView">
+      <div class="detail-head">
+        <div class="crumb"><span class="muted">余额</span><span class="muted">/</span><span>开发者</span></div>
+        <button class="btn btn-tertiary btn-sm" onclick="showHome(document.querySelector('.sidebar .nav-item[data-home=&quot;balances&quot;]'),'balancesSection')">返回工作台</button>
+      </div>
+      <div class="summary-strip">
+        <div class="summary-main">
+          <div class="summary-name">开发者</div>
+          <div class="summary-sub">Organization · Crypto balance</div>
+        </div>
+        <div class="summary-meta">
+          <div class="summary-kv">代币 <span class="num">2</span></div>
+          <div class="summary-kv">总余额 <span class="num">$38.34</span></div>
+          <button class="btn btn-primary" onclick="openCryptoPayout()">出金</button>
+          <button class="btn btn-primary" onclick="openTransferDialog()">划转</button>
+        </div>
+      </div>
+      <section>
+        <div class="sec-title">代币</div>
+        <div class="asset-list">
+          <div class="asset-group">
+            <div class="asset-left">
+              <div class="asset-icon">USDT</div>
+              <div>
+                <div class="asset-name">USDT <span class="asset-tag">2 链</span></div>
+              </div>
+            </div>
+            <div class="asset-total num">38.4<span class="approx">≈ $38.34</span></div>
+          </div>
+          <div class="asset-row">
+            <div class="asset-left">
+              <div class="asset-icon">USDT</div>
+              <div><div class="asset-name">USDT</div><div class="asset-sub">Tron Testnet</div></div>
+            </div>
+            <div class="asset-amount num">36.4<span class="approx">≈ $36.34</span></div>
+            <div class="asset-actions"><button class="act-link" onclick="openTransferDialog()">划转</button></div>
+          </div>
+          <div class="asset-row">
+            <div class="asset-left">
+              <div class="asset-icon">USDT</div>
+              <div><div class="asset-name">USDTI</div><div class="asset-sub">Tron Testnet</div></div>
+            </div>
+            <div class="asset-amount num">2<span class="approx">≈ $2</span></div>
+            <div class="asset-actions"><button class="act-link" onclick="openTransferDialog()">划转</button></div>
+          </div>
+        </div>
+      </section>
+      <section class="detail-card">
+        <div class="sec-title">操作记录</div>
+        <div class="seg-tabs">
+          <button class="seg-tab active">加密货币转账</button>
+          <button class="seg-tab">法币出金</button>
+          <button class="seg-tab">划转记录</button>
+        </div>
+        <div class="tool-row">
+          <div class="searchbox">[icon: search] 按收款地址或出金 ID 搜索</div>
+          <div class="toolbar-actions"><button class="btn btn-tertiary btn-sm">筛选</button><button class="btn btn-tertiary btn-sm">排序</button><button class="btn btn-primary btn-sm">导出</button></div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>资金转出 ID</th><th>转出金额</th><th>到账金额</th><th>收款地址</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td colspan="6"><div class="empty-state">暂无加密货币转账记录</div></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="detail-view" id="fiatDetailView">
+      <div class="detail-head">
+        <div class="crumb"><span class="muted">余额</span><span class="muted">/</span><span>SGB</span></div>
+        <button class="btn btn-tertiary btn-sm" onclick="showHome(document.querySelector('.sidebar .nav-item[data-home=&quot;balances&quot;]'),'balancesSection')">返回工作台</button>
+      </div>
+      <div class="summary-strip">
+        <div class="summary-main">
+          <div class="summary-name">SGB</div>
+          <div class="summary-sub">SINGAPORE GULF BANK B.S.C. CLOSED</div>
+        </div>
+        <div class="summary-meta"><div class="summary-kv">总余额 <span class="num">$96</span></div><button class="btn btn-primary" onclick="openOffRampDialog()">法币出金</button></div>
+      </div>
+      <section>
+        <div class="sec-title">余额</div>
+        <div class="fiat-balance-row">
+          <div class="fiat-cell head">货币</div>
+          <div class="fiat-cell head">总余额</div>
+          <div class="fiat-cell head">可用余额</div>
+          <div class="fiat-cell head">冻结余额</div>
+          <div class="fiat-cell">🇺🇸 USD</div>
+          <div class="fiat-cell num">96</div>
+          <div class="fiat-cell num">96</div>
+          <div class="fiat-cell num">0</div>
+        </div>
+      </section>
+      <section class="detail-card">
+        <div class="seg-tabs">
+          <button class="seg-tab active">Settlement Contracts</button>
+          <button class="seg-tab">操作记录</button>
+        </div>
+        <div class="tool-row">
+          <div class="searchbox">[icon: search] 按全部字段搜索</div>
+          <div class="toolbar-actions"><button class="btn btn-tertiary btn-sm">排序</button></div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>合约 ID</th><th>方向</th><th>流动性提供方</th><th>法币</th><th>加密货币</th><th>状态</th><th>过期时间</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td><span class="contract-id">bd600f36...l2d1099a</span><span class="copy-dot"></span></td><td><span class="tag tag-orange">买入加密货币</span></td><td class="td-strong">anthony_org_test3_增量用户<br>15144</td><td class="num">2 USD</td><td class="num">2.01 USDT(Nile)</td><td><span class="tag tag-green">成功</span></td><td>2026-06-02 17:20</td><td><button class="act-link">查看</button></td></tr>
+            <tr><td><span class="contract-id">b47fafb0...deb01daa</span><span class="copy-dot"></span></td><td><span class="tag tag-orange">买入加密货币</span></td><td class="td-strong">anthony_org_test3_增量用户<br>15144</td><td class="num">2 USD</td><td class="num">2.01 USDT(Nile)</td><td><span class="tag tag-green">成功</span></td><td>2026-06-02 16:25</td><td><button class="act-link">查看</button></td></tr>
+            <tr><td><span class="contract-id">dbddb9ed...0df3dd</span><span class="copy-dot"></span></td><td><span class="tag tag-orange">买入加密货币</span></td><td class="td-strong">anthony_org_test3_增量用户<br>15144</td><td class="num">2 USD</td><td class="num">2.4 USDT(Nile)</td><td><span class="tag tag-red">失败</span></td><td>2026-06-02 15:06</td><td><button class="act-link">查看</button></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="detail-view" id="bulkSendView">
+      <div class="detail-head">
+        <div class="crumb"><span>发送给多个收款人</span></div>
+        <button class="btn btn-tertiary btn-sm" onclick="showHome(navForModule('bulk'))">返回工作台</button>
+      </div>
+      <section class="bulk-page">
+        <div class="notice-line"><span>[icon: notice]</span><span>部分出金可能通过智能合约发送。某些钱包可能无法正确显示余额变化。请始终在链上验证。此操作无法撤销。</span></div>
+        <div class="form-grid">
+          <div><div class="field-label">备注</div><div class="field-box placeholder">输入此次出金的目的</div></div>
+          <div><div class="field-label">来源账户</div><div class="field-box placeholder">选择账户 <span>⌄</span></div></div>
+        </div>
+        <div class="recipient-card">
+          <div class="recipient-head"><div class="sec-title" style="margin-bottom:0;">转出目的地</div><div><span class="view-all">从文件中添加</span> <span class="muted">|</span> <span class="view-all">从转出目的地中添加</span> <span class="muted">|</span> <span style="color:var(--alert);font-size:12px;font-weight:500;">清空全部</span></div></div>
+          <div style="padding:16px 16px 0;"><div class="field-label">代币 <span style="float:right;color:var(--text-secondary);font-weight:400;">可用：-</span></div><div class="field-box placeholder">选择代币 <span>⌄</span></div></div>
+          <div class="recipient-grid">
+            <div></div><div class="field-label">接收地址</div><div class="field-label">接收金额</div><div class="field-label">备注（可选）</div><div></div>
+            <div class="recipient-row-index">1</div><div class="field-box placeholder">搜索或输入地址</div><div class="field-box placeholder">接收金额</div><div class="field-box placeholder">输入不超过 255 个字符</div><div style="color:var(--text-tertiary);">⊖</div>
+            <div class="recipient-row-index">2</div><div class="field-box placeholder">搜索或输入地址</div><div class="field-box placeholder">接收金额</div><div class="field-box placeholder">输入不超过 255 个字符</div><div style="color:var(--text-tertiary);">⊖</div>
+          </div>
+          <div style="padding:0 24px 24px;"><span class="view-all">+ 添加</span></div>
+        </div>
+        <div class="bottom-bar">
+          <div class="radio-line">执行策略 <span class="fake-radio">仅在所有地址验证通过后继续</span><span class="fake-radio">跳过验证失败的地址</span></div>
+          <div><button class="btn btn-primary">预览</button> <button class="btn btn-tertiary">取消</button></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="detail-view" id="payerListView">
+      <div class="detail-head">
+        <div class="crumb"><span>充值</span><span class="muted">?</span></div>
+        <button class="btn btn-tertiary btn-sm" onclick="showHome(navForModule('topup'))">返回工作台</button>
+      </div>
+      <div class="seg-tabs">
+        <button class="seg-tab active">付款方</button>
+        <button class="seg-tab">交易</button>
+      </div>
+      <section class="list-card">
+        <div class="list-toolbar">
+          <div class="searchbox">[icon: search] 按付款方 ID、地址或商户搜索</div>
+          <div class="toolbar-actions">
+            <button class="btn btn-tertiary">筛选</button>
+            <button class="btn btn-tertiary">排序</button>
+            <button class="btn btn-primary">创建付款方</button>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>付款方 ID</th><th>地址</th><th>商户</th><th>最后活动时间</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr data-action="payer-address" data-payer-id="P20260624TI8282790b86" data-address-count="1" style="cursor:pointer;"><td><div class="payer-id">P20260624TI8282790b86</div><div class="payer-sub">1</div></td><td class="td-strong">1</td><td><div class="payer-id">M1001</div><div class="payer-sub">测试一下第一次创建商户</div></td><td>2026-06-25 02:28:27</td><td><button class="icon-action" data-action="payer-address" data-payer-id="P20260624TI8282790b86" data-address-count="1">[icon: address]</button><button class="icon-action" data-action="noop">[icon: history]</button></td></tr>
+            <tr data-action="payer-address" data-payer-id="P20260624TI82821759eb" data-address-count="0" style="cursor:pointer;"><td><div class="payer-id">P20260624TI82821759eb</div><div class="payer-sub">1</div></td><td class="td-strong">0</td><td><div class="payer-id">M1002</div><div class="payer-sub">测试</div></td><td>2026-06-25 02:28:21</td><td><button class="icon-action" data-action="payer-address" data-payer-id="P20260624TI82821759eb" data-address-count="0">[icon: address]</button><button class="icon-action" data-action="noop">[icon: history]</button></td></tr>
+            <tr data-action="payer-address" data-payer-id="P20260624TI828120f63e" data-address-count="0" style="cursor:pointer;"><td><div class="payer-id">P20260624TI828120f63e</div><div class="payer-sub">2213123</div></td><td class="td-strong">0</td><td><div class="payer-id">M1002</div><div class="payer-sub">测试</div></td><td>2026-06-25 02:28:12</td><td><button class="icon-action" data-action="payer-address" data-payer-id="P20260624TI828120f63e" data-address-count="0">[icon: address]</button><button class="icon-action" data-action="noop">[icon: history]</button></td></tr>
+          </tbody>
+        </table>
+        <div class="pager"><span>1-3 of 3 items</span><span><button class="btn btn-tertiary btn-sm">←</button> <button class="btn btn-secondary btn-sm">1</button> <button class="btn btn-tertiary btn-sm">→</button></span></div>
+      </section>
+    </div>
+
+    <div class="detail-view" id="payerAddressView">
+      <div class="detail-head address-title-head">
+        <div class="crumb"><span id="payerAddressTitle">P20260624TI8282790b86 的地址</span></div>
+        <a class="btn btn-tertiary btn-sm" id="payerAddressBack" href="#payer-list">返回付款方列表</a>
+      </div>
+      <section class="list-card address-book-card">
+        <div class="list-toolbar">
+          <div class="searchbox">[icon: search] 按地址搜索</div>
+          <div class="toolbar-actions">
+            <button class="btn btn-tertiary">排序</button>
+            <button class="btn btn-primary">创建地址</button>
+          </div>
+        </div>
+        <div class="address-count">总地址数： <span class="num" id="payerAddressCount">1</span></div>
+        <div class="payer-address-row" id="payerAddressRow">
+          <div class="asset-left">
+            <div class="chain-icon">TRX</div>
+            <div>
+              <div class="address-full">TRnGdjAhYFtU3Sn33Qctbc5vjXXoLfVHtK</div>
+              <span class="asset-tag">MPC钱包</span>
+            </div>
+          </div>
+          <div class="address-actions">
+            <button class="icon-action">[icon: copy]</button>
+            <button class="icon-action">[icon: QR]</button>
+          </div>
+        </div>
+        <div class="address-empty" id="payerAddressEmpty">暂无地址</div>
+      </section>
+    </div>
   </main>
 </div>
 
@@ -516,26 +838,277 @@
   </div>
 </div>
 
+<div class="module-toast" id="moduleToast"></div>
+
+<div class="flow-mask" id="createOrderDialog">
+  <div class="flow-dialog">
+    <div class="flow-head">
+      <div class="flow-title">创建订单</div>
+      <button class="flow-close" onclick="closeFlow('createOrderDialog')">×</button>
+    </div>
+    <div class="flow-body">
+      <div class="modal-grid">
+        <div>
+          <div class="field-label">商户</div>
+          <div class="input-shell tall"><span><span class="input-value">测试</span><br><span class="input-sub">MI002</span></span><span>⌄</span></div>
+        </div>
+        <div>
+          <div class="field-label">法币币种</div>
+          <div class="input-shell"><span class="input-value">🇺🇸 USD - 美元</span><span>⌄</span></div>
+        </div>
+        <div>
+          <div class="field-label">订单金额</div>
+          <div class="input-shell"><span class="input-value num">31313</span><span class="clear-icon">×</span></div>
+        </div>
+        <div>
+          <div class="field-label">开发者费用金额</div>
+          <div class="input-shell"><span class="input-value num">1</span><span class="clear-icon">×</span></div>
+        </div>
+        <div>
+          <div class="field-label">代币和网络</div>
+          <div class="input-shell tall"><span><span class="asset-icon" style="width:32px;height:32px;margin-right:8px;display:inline-flex;">USDT</span><span class="input-value">USDT</span><br><span class="input-sub" style="margin-left:44px;">Arbitrum</span></span><span>⌄</span></div>
+        </div>
+        <div>
+          <div class="field-label">过期时间</div>
+          <div class="input-shell"><span class="input-value num">1800</span><span><span class="clear-icon">×</span> S</span></div>
+        </div>
+        <div>
+          <div class="field-label">开发者订单号</div>
+          <div class="input-shell"><span class="input-value num">2312</span><span class="clear-icon">×</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-foot">
+      <button class="btn btn-tertiary" onclick="closeFlow('createOrderDialog')">取消</button>
+      <button class="btn btn-primary">提交</button>
+    </div>
+  </div>
+</div>
+
+<div class="flow-mask" id="cryptoPayoutDialog">
+  <div class="flow-dialog">
+    <div class="flow-head">
+      <div class="flow-title">发送加密货币</div>
+      <button class="flow-close" onclick="closeFlow('cryptoPayoutDialog')">×</button>
+    </div>
+    <div class="flow-body">
+      <div class="flow-section">
+        <div class="field-label">源账户</div>
+        <div class="account-block">开发者</div>
+      </div>
+      <div class="flow-section">
+        <div class="recipient-box">
+          <div class="recipient-top">
+            <div class="field-label" style="margin-bottom:0;color:var(--text-secondary);font-weight:600;">收款人</div>
+            <div class="protect-tag">[icon: shield] Cobo Premium 保护中</div>
+          </div>
+          <div class="send-row">
+            <div class="field-box"><span><span class="asset-icon" style="width:28px;height:28px;margin-right:8px;display:inline-flex;">USDT</span>USDT<br><span class="asset-sub">Arbitrum</span></span><span>⌄</span></div>
+            <div class="field-box placeholder">输入地址、目标名称或从目标中选择</div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-section amount-box">
+        <div class="amount-head"><span>您将发送</span><span>可用： <span class="num" style="color:var(--text-primary);">0 USDT</span> ｜ [icon: toggle] 自动选择资金来源</span></div>
+        <input class="amount-input" placeholder="输入金额">
+      </div>
+      <div class="flow-section">
+        <div class="field-label">备注（可选）</div>
+        <textarea class="memo-box" placeholder="输入备注（最多 1,000 个字符）"></textarea>
+      </div>
+    </div>
+    <div class="flow-foot">
+      <button class="btn btn-tertiary" onclick="closeFlow('cryptoPayoutDialog')">取消</button>
+      <button class="btn btn-disabled">预览</button>
+    </div>
+  </div>
+</div>
+
+<div class="flow-mask" id="offRampDialog">
+  <div class="flow-dialog">
+    <div class="flow-head">
+      <div class="flow-title">提现到银行</div>
+      <button class="flow-close" onclick="closeFlow('offRampDialog')">×</button>
+    </div>
+    <div class="flow-body">
+      <div class="flow-section">
+        <div class="field-label">源账户</div>
+        <div class="account-block">开发者</div>
+      </div>
+      <div class="flow-section">
+        <div class="recipient-box">
+          <div class="field-label" style="color:var(--text-secondary);font-weight:600;">收款人</div>
+          <div class="send-row">
+            <div class="field-box"><span>🇺🇸 USD</span></div>
+            <div class="field-box"><span><span class="td-strong">123456789001</span> <span class="asset-tag">HSBC_HK_TEST_01</span><br><span class="asset-sub">HSBC - The Hongkong and Shanghai Banking Corporation Limited</span></span><span>⌄</span></div>
+          </div>
+          <div class="field-label" style="margin-top:24px;">使用 VA 转账</div>
+          <div class="route-choice">
+            <div class="choice-card"><div class="choice-title">是</div><div class="choice-sub">使用 VA 转账进行同名账户转账</div></div>
+            <div class="choice-card selected"><div class="choice-title">否</div><div class="choice-sub">第三方银行账户转账</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-section amount-box">
+        <div class="amount-head"><span>您发送</span><span>可用： <span class="num" style="color:var(--text-primary);">≈ 36.34 USD</span> ｜ [icon: toggle] 自动选择资金来源</span></div>
+        <input class="amount-input" placeholder="输入金额">
+      </div>
+      <div class="flow-section">
+        <div class="field-label">备注（可选）</div>
+        <textarea class="memo-box" placeholder="输入备注（最多 1,000 个字符）"></textarea>
+      </div>
+    </div>
+    <div class="flow-foot">
+      <button class="btn btn-tertiary" onclick="closeFlow('offRampDialog')">取消</button>
+      <button class="btn btn-disabled">预览</button>
+    </div>
+  </div>
+</div>
+
+<div class="flow-mask" id="transferDialog">
+  <div class="flow-dialog">
+    <div class="flow-head">
+      <div class="flow-title">划转</div>
+      <button class="flow-close" onclick="closeFlow('transferDialog')">×</button>
+    </div>
+    <div class="flow-body">
+      <div class="flow-section">
+        <div class="field-label">来源账户</div>
+        <div class="account-block">开发者账户</div>
+      </div>
+      <div class="flow-section">
+        <div class="field-label">目标账户</div>
+        <div class="field-box" style="height:64px;"><span><span class="td-strong">测试</span><br><span class="asset-sub">MI002</span></span><span>⌄</span></div>
+      </div>
+      <div class="flow-section">
+        <div class="field-label">代币</div>
+        <div class="field-box" style="height:72px;border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand);"><span><span class="asset-icon" style="width:32px;height:32px;margin-right:8px;display:inline-flex;">USDT</span><span class="td-strong">USDT(Nile)</span><br><span class="asset-sub">Tron Testnet</span></span><span>⌄</span></div>
+      </div>
+      <div class="flow-section">
+        <div class="amount-head"><span class="field-label" style="margin-bottom:0;">金额</span><span>可转出: <span class="num" style="color:var(--text-primary);">0 USDT(Nile)</span> <span class="view-all">最大</span></span></div>
+        <div class="field-box placeholder" style="height:64px;">0</div>
+      </div>
+      <div class="flow-section">
+        <div class="field-label">描述</div>
+        <textarea class="memo-box" placeholder="输入描述（最多 1000 个字符）"></textarea>
+      </div>
+    </div>
+    <div class="flow-foot">
+      <button class="btn btn-tertiary" onclick="closeFlow('transferDialog')">取消</button>
+      <button class="btn btn-primary">预览</button>
+    </div>
+  </div>
+</div>
+
   <script>
     var FIAT_BASE = "index.html?embed=1";
     function _setActive(el){document.querySelectorAll('.sidebar .nav-item').forEach(function(i){i.classList.remove('active');});if(el)el.classList.add('active');}
+    function navForFiat(page){return document.querySelector('.sidebar .nav-item[data-fiat="'+page+'"]');}
+    function navForModule(module){return document.querySelector('.sidebar .nav-item[data-module="'+module+'"]');}
     function showFiat(page, el){
       var f=document.getElementById('fiatFrame');
       f.src = FIAT_BASE + '&p=' + page + '#' + page;   /* &p= 强制刷新，#page 触发 Fiat 页深链 */
       f.style.display='block';
       document.getElementById('homeView').style.display='none';
+      hideLocalViews();
       _setActive(el); window.scrollTo(0,0);
     }
-    function showHome(el){
+    function showHome(el, targetId){
       var f=document.getElementById('fiatFrame');
       f.style.display='none'; f.src='about:blank';
       document.getElementById('homeView').style.display='block';
+      hideLocalViews();
       _setActive(el);
+      if(targetId){setTimeout(function(){focusHomeSection(targetId);},0);}else{window.scrollTo(0,0);}
     }
+    function hideLocalViews(){
+      document.querySelectorAll('.detail-view').forEach(function(v){v.classList.remove('active');});
+    }
+    function showLocalView(viewId, navEl){
+      var f=document.getElementById('fiatFrame');
+      f.style.display='none'; f.src='about:blank';
+      document.getElementById('homeView').style.display='none';
+      hideLocalViews();
+      document.getElementById(viewId).classList.add('active');
+      _setActive(navEl || document.querySelector('.sidebar .nav-item[data-home="balances"]'));
+      window.scrollTo(0,0);
+    }
+    function showCryptoDetail(){showLocalView('cryptoDetailView', document.querySelector('.sidebar .nav-item[data-home="balances"]'));}
+    function showFiatDetail(){showLocalView('fiatDetailView', document.querySelector('.sidebar .nav-item[data-home="balances"]'));}
+    function syncHash(hash){
+      if(location.hash!==hash)history.replaceState(null,'',hash);
+    }
+    function showBulkSend(){showLocalView('bulkSendView', navForModule('bulk'));}
+    function showPayerList(){syncHash('#payer-list');showLocalView('payerListView', navForModule('topup'));}
+    function showPayerAddress(payerId, addressCount){
+      var id=payerId || 'P20260624TI8282790b86';
+      var count=typeof addressCount==='number' ? addressCount : 1;
+      document.getElementById('payerAddressTitle').textContent=id+' 的地址';
+      document.getElementById('payerAddressCount').textContent=count;
+      document.getElementById('payerAddressRow').style.display=count>0 ? 'flex' : 'none';
+      document.getElementById('payerAddressEmpty').classList.toggle('visible', count===0);
+      syncHash('#payer-address');
+      showLocalView('payerAddressView', navForModule('topup'));
+    }
+    function focusHomeSection(targetId){
+      var t=document.getElementById(targetId);
+      if(t){t.scrollIntoView({behavior:'smooth',block:'start'});}
+    }
+    function toast(text){
+      var t=document.getElementById('moduleToast');
+      t.textContent=text;
+      t.classList.add('open');
+      clearTimeout(window.__moduleToastTimer);
+      window.__moduleToastTimer=setTimeout(function(){t.classList.remove('open');},2200);
+    }
+    function openModule(module){
+      if(module==='payins'){openCreateOrderDialog();_setActive(navForModule('payins'));return;}
+      if(module==='topup'){showPayerList();return;}
+      if(module==='payout'){openCryptoPayout();_setActive(navForModule('payout'));return;}
+      if(module==='bulk'){showBulkSend();return;}
+      if(module==='allocate'){openTransferDialog();_setActive(navForModule('allocate'));return;}
+      var labels={
+        payins:'Pay-in 收款订单模块入口已聚合在 Payment 首页；正式接入时跳转到 Pay-ins 列表 / 创建订单。',
+        topup:'Top-up 充值模块入口已聚合在 Payment 首页；正式接入时跳转到充值账户配置与入金地址。',
+        payout:'Payout 下发模块入口已聚合在 Payment 首页；正式接入时跳转到 Payout 设置或发起页。',
+        bulk:'Bulk Send 批量下发模块入口已聚合在 Payment 首页；正式接入时跳转到批量模板与提交页。',
+        allocate:'Allocate 余额分配模块入口已聚合在 Payment 首页；正式接入时跳转到账户间划转。',
+        merchants:'Merchants 商户模块入口已聚合在 Payment 首页；正式接入时跳转到商户列表。',
+        activities:'Activities 资金活动模块入口已聚合在 Payment 首页；正式接入时跳转到活动明细。',
+        reports:'Reports 报表模块入口已聚合在 Payment 首页；正式接入时跳转到对账报表。'
+      };
+      showHome(navForModule(module)||document.querySelector('.sidebar .nav-item[data-home="top"]'));
+      toast(labels[module]||'模块入口已聚合在 Payment 首页。');
+    }
+    function openFlow(id){document.getElementById(id).classList.add('open');}
+    function closeFlow(id){document.getElementById(id).classList.remove('open');}
+    function openCreateOrderDialog(){openFlow('createOrderDialog');}
+    function openCryptoPayout(){openFlow('cryptoPayoutDialog');}
+    function openOffRampDialog(){openFlow('offRampDialog');}
+    function openTransferDialog(){openFlow('transferDialog');}
     function openSnDialog(){document.getElementById('snDialog').classList.add('open');}
     function closeSnDialog(){document.getElementById('snDialog').classList.remove('open');}
     function openSnChat(){closeSnDialog();document.getElementById('snChat').classList.add('open');}
     function closeSnChat(){document.getElementById('snChat').classList.remove('open');}
+    document.getElementById('payerAddressBack').addEventListener('click', function(event){
+      showPayerList();
+    });
+    function routeHash(){
+      if(location.hash==='#payer-list')showPayerList();
+      if(location.hash==='#payer-address')showPayerAddress();
+    }
+    window.addEventListener('hashchange', routeHash);
+    document.addEventListener('click', function(event){
+      var target=event.target.closest('[data-action]');
+      if(!target)return;
+      var action=target.getAttribute('data-action');
+      if(action==='payer-address'){
+        event.preventDefault();
+        event.stopPropagation();
+        showPayerAddress(target.getAttribute('data-payer-id'), Number(target.getAttribute('data-address-count') || 0));
+      }
+    });
+    routeHash();
   </script>
 </body>
 </html>
