@@ -399,6 +399,24 @@ body.embed .canvas{padding:24px;}
 .hint-box{background:var(--bg-card);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--t-secondary);line-height:1.65;display:flex;gap:8px;align-items:flex-start;}
 .hint-box .hb-ico{color:var(--brand);flex-shrink:0;}
 
+/* fiat outflow route selector */
+.out-route-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.out-route{border:1px solid var(--divider);border-radius:10px;padding:16px;background:var(--bg-main);cursor:pointer;transition:all .15s;}
+.out-route:hover{background:var(--hover2);}
+.out-route.sel{border-color:var(--brand);background:var(--brand-10);}
+.out-route-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.out-route-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--t-tertiary);position:relative;flex-shrink:0;}
+.out-route.sel .out-route-dot{border-color:var(--brand);}
+.out-route.sel .out-route-dot::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--brand);}
+.out-route-title{font-size:14px;font-weight:600;}
+.out-route-sub{font-size:12px;color:var(--t-secondary);line-height:20px;}
+.out-route-tag{display:inline-flex;margin-top:8px;padding:2px 8px;border-radius:4px;background:var(--tg-grey-b);color:var(--tg-grey-t);font-size:10px;font-weight:600;}
+.out-auto{background:var(--bg-card);border-radius:6px;padding:12px 16px;font-size:12px;line-height:20px;color:var(--t-secondary);display:flex;gap:8px;margin-bottom:16px;}
+.out-auto strong{color:var(--t-primary);font-weight:600;}
+#outModal .out-self-only,#outModal .out-payout-only{display:none;}
+#outModal[data-route="self"] .out-self-only{display:block;}
+#outModal[data-route="third"] .out-payout-only{display:block;}
+
 /* purpose grid */
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .popt{border:1px solid var(--divider);border-radius:6px;padding:11px 13px;cursor:pointer;font-size:13px;color:var(--t-secondary);transition:all .15s;display:flex;align-items:center;gap:9px;}
@@ -499,7 +517,7 @@ body.embed .canvas{padding:24px;}
     <div class="doc-hero">
       <div class="doc-eyebrow">PRODUCT DESIGN · COBO FIAT IN/OUT</div>
       <div class="doc-h1">Cobo Fiat in/out 法币操作中枢</div>
-      <div class="doc-lead">Cobo Fiat in/out 是 Cobo Payment 的下游法币侧。商户在 Payment 收到的稳定币，经 off-ramp <strong>过账</strong>落入这里，变成可持有、可多币种管理的法币，再通过<strong>提现</strong>（打给自己）与<strong>下发</strong>（打给第三方）两条独立路径出去。两者不是两个产品，而是<strong>同一套商户账本上、一条资金链的前后两段</strong>。本方案先讲清两者如何是同一套系统（02 节），再展开账户、来源、余额与出口逻辑；「交互原型」是这套思路的可视化呈现。</div>
+      <div class="doc-lead">Cobo Fiat in/out 是 Cobo Payment 的下游法币侧。商户在 Payment 收到的稳定币，经 off-ramp <strong>过账</strong>落入这里，变成可持有、可多币种管理的法币，再通过统一的<strong>法币出金</strong>入口出去；系统根据收款方自动分叉为<strong>提现</strong>（打给自己）或<strong>下发</strong>（打给第三方）。它们不是两个产品，而是<strong>同一套商户账本上、一条资金链的前后两段</strong>。本方案先讲清两者如何是同一套系统（02 节），再展开账户、来源、余额与出口逻辑；「交互原型」是这套思路的可视化呈现。</div>
     </div>
 
     <!-- 1 POSITIONING -->
@@ -809,8 +827,8 @@ body.embed .canvas{padding:24px;}
     <!-- 4 TWO EXITS -->
     <div class="doc-section">
       <div class="doc-sec-num">09 / 出口逻辑</div>
-      <div class="doc-h2">两个独立出口：提现 vs 下发</div>
-      <div class="doc-h2-sub">不只是 UX 上的分支——收款方是不是客户自己，决定了合规负担和执行链路完全不同。做成两个独立菜单。</div>
+      <div class="doc-h2">一个入口，两条执行链路：法币出金</div>
+      <div class="doc-h2-sub">用户只需要发起「法币出金」；系统根据收款方是不是客户自己自动分叉。收款方不同，底层合规负担和执行链路仍然完全不同。</div>
       <div class="exit-grid">
         <div class="exit-card">
           <div class="exit-head">
@@ -845,7 +863,7 @@ body.embed .canvas{padding:24px;}
       </div>
       <div class="callout" style="background:var(--bg-main);margin-top:16px;">
         <span class="co-ico">🏷️</span>
-        <div class="co-body" style="color:var(--t-secondary);"><strong style="color:var(--t-primary);">两层模型下的差异：</strong>提现是<strong style="color:var(--t-primary);">纯组织层行为</strong>（组织把钱取回组织自己的同名账户，不涉及商户，流程不变）。下发<strong style="color:var(--t-primary);">可带商户维度</strong>——启用商户的客户先选商户、再从该商户关联的收款方中选；无商户的客户直接从组织级收款方选。收款方因此归属到商户层，无商户时挂组织层。</div>
+        <div class="co-body" style="color:var(--t-secondary);"><strong style="color:var(--t-primary);">两层模型下的差异：</strong>「打给自己」是<strong style="color:var(--t-primary);">纯组织层行为</strong>（组织把钱取回组织自己的同名账户，不涉及商户，流程不变）。「打给第三方」<strong style="color:var(--t-primary);">可带商户维度</strong>——启用商户的客户先选商户、再从该商户关联的收款方中选；无商户的客户直接从组织级收款方选。前台入口统一为「法币出金」，底层仍按提现 / 下发两类记录和状态链路落账。</div>
       </div>
     </div>
 
@@ -928,7 +946,7 @@ body.embed .canvas{padding:24px;}
       <div class="callout" style="background:var(--bg-main);">
         <span class="co-ico">📍</span>
         <div class="co-body" style="color:var(--t-secondary);">
-          <strong style="color:var(--t-primary);">本版原型包含：</strong>Overview（余额三段视图）、提现流程、下发流程（含商户维度）、三类记录列表（提现 / 下发 / 换汇）、Merchants（商户 + 商户 KYB）、Beneficiaries、My Accounts。<br>
+          <strong style="color:var(--t-primary);">本版原型包含：</strong>Overview（余额三段视图）、统一法币出金流程（按收款方分叉为提现 / 下发，含商户维度）、三类记录列表（提现 / 下发 / 换汇）、Merchants（商户 + 商户 KYB）、Beneficiaries、My Accounts。<br>
           <strong style="color:var(--t-primary);">本版占位、下一步实现：</strong>Convert（独立换汇流程）、Settlement（结算室）、中后台运营系统（数据监控 + 路由配置 + 资金守恒实时校验）。<br>
           <strong style="color:var(--t-primary);">本次新增（Payment ↔ Fiat 串联）：</strong>设计方案侧已补齐 02 节「同一套系统」（端到端资金链 + 账本对应表 + off-ramp 过账原则），并据此校准 07 法币来源与 10 完整逻辑链条。<strong style="color:var(--t-primary);">原型侧</strong>的跨 App 衔接（Overview 顶部「上游 · Payment 待结算」一键 off-ramp 过账）待「一个 / 两个 App」定向后再做。
         </div>
@@ -973,7 +991,7 @@ body.embed .canvas{padding:24px;}
       <!-- OVERVIEW (default) -->
       <div data-page="overview">
         <div class="pg-title">Fiat Overview</div>
-        <div class="pg-sub">管理你的法币余额、提现与下发</div>
+        <div class="pg-sub">管理你的法币余额与法币出金</div>
 
         <!-- 第一阶段：法币按组织总额展示，不按商户拆分（移除"按商户"切换） -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;">
@@ -1003,8 +1021,7 @@ body.embed .canvas{padding:24px;}
                   <span class="bc-va-copy">⧉</span>
                 </div>
                 <div class="bc-actions">
-                  <button class="btn btn-md btn-sec btn-flex" onclick="openW()">提现</button>
-                  <button class="btn btn-md btn-pri btn-flex" onclick="openP(true)">下发</button>
+                  <button class="btn btn-md btn-pri btn-full" onclick="openOut('self')">法币出金</button>
                 </div>
               </div>
               <!-- HKD -->
@@ -1018,8 +1035,7 @@ body.embed .canvas{padding:24px;}
                   <span class="bc-va-copy">⧉</span>
                 </div>
                 <div class="bc-actions">
-                  <button class="btn btn-md btn-sec btn-flex" onclick="openW()">提现</button>
-                  <button class="btn btn-md btn-pri btn-flex" onclick="openP(true)">下发</button>
+                  <button class="btn btn-md btn-pri btn-full" onclick="openOut('self')">法币出金</button>
                 </div>
               </div>
               <!-- SGD -->
@@ -1033,9 +1049,7 @@ body.embed .canvas{padding:24px;}
                   <span class="bc-va-copy">⧉</span>
                 </div>
                 <div class="bc-actions">
-                  <button class="btn btn-md btn-sec btn-flex" onclick="openW()">提现</button>
-                  <!-- no beneficiary registered -> prompt -->
-                  <button class="btn btn-md btn-pri btn-flex" onclick="openP(false)">下发</button>
+                  <button class="btn btn-md btn-pri btn-full" onclick="openOut('self')">法币出金</button>
                 </div>
               </div>
               <!-- EUR (zero, optional add) -->
@@ -1110,38 +1124,38 @@ body.embed .canvas{padding:24px;}
                 <div class="acc-tab" onclick="switchAcc('payee',this)">收款方</div>
               </div>
               <div data-acc="mine" class="active">
-                <div class="acc-item" onclick="openW()">
+                <div class="acc-item" onclick="openOut('self')">
                   <div class="acc-av">C</div>
                   <div class="acc-info"><div class="acc-name">Citibank · USD</div><div class="acc-sub">****1234 · XYZ Ltd</div></div>
-                  <span class="acc-act">提现</span>
+                  <span class="acc-act">法币出金</span>
                 </div>
-                <div class="acc-item" onclick="openW()">
+                <div class="acc-item" onclick="openOut('self')">
                   <div class="acc-av">J</div>
                   <div class="acc-info"><div class="acc-name">JPMorgan · USD</div><div class="acc-sub">****5678 · XYZ Ltd</div></div>
-                  <span class="acc-act">提现</span>
+                  <span class="acc-act">法币出金</span>
                 </div>
-                <div class="acc-item" onclick="openW()">
+                <div class="acc-item" onclick="openOut('self')">
                   <div class="acc-av">H</div>
                   <div class="acc-info"><div class="acc-name">HSBC · HKD</div><div class="acc-sub">****9012 · XYZ Ltd</div></div>
-                  <span class="acc-act">提现</span>
+                  <span class="acc-act">法币出金</span>
                 </div>
                 <div class="acc-manage" onclick="navTo('accounts')">管理我的账户 →</div>
               </div>
               <div data-acc="payee">
-                <div class="acc-item" onclick="openP(true)">
+                <div class="acc-item" onclick="openOut('third')">
                   <div class="acc-av" style="background:var(--tg-green-b);color:var(--tg-green-t);">M</div>
                   <div class="acc-info"><div class="acc-name">Merchant A</div><div class="acc-sub">USD · Citibank ****3456</div></div>
-                  <span class="acc-act">下发</span>
+                  <span class="acc-act">法币出金</span>
                 </div>
-                <div class="acc-item" onclick="openP(true)">
+                <div class="acc-item" onclick="openOut('third')">
                   <div class="acc-av" style="background:var(--tg-green-b);color:var(--tg-green-t);">M</div>
                   <div class="acc-info"><div class="acc-name">Merchant B</div><div class="acc-sub">HKD · Hang Seng ****7890</div></div>
-                  <span class="acc-act">下发</span>
+                  <span class="acc-act">法币出金</span>
                 </div>
-                <div class="acc-item" onclick="openP(true)">
+                <div class="acc-item" onclick="openOut('third')">
                   <div class="acc-av" style="background:var(--tg-blue-b);color:var(--tg-blue-t);">L</div>
                   <div class="acc-info"><div class="acc-name">LP Partner</div><div class="acc-sub">SGD · DBS ****2345</div></div>
-                  <span class="acc-act">下发</span>
+                  <span class="acc-act">法币出金</span>
                 </div>
                 <div class="acc-manage" onclick="navTo('beneficiaries')">管理收款方 →</div>
               </div>
@@ -1354,138 +1368,135 @@ body.embed .canvas{padding:24px;}
   </div>
 </div>
 
-<!-- ============ WITHDRAW MODAL ============ -->
-<div class="overlay" id="wModal">
+<!-- ============ FIAT OUTFLOW MODAL ============ -->
+<div class="overlay" id="outModal" data-route="self">
   <div class="modal">
-    <div class="m-head"><div class="m-title">提现</div><button class="m-x" onclick="closeM('wModal')">✕</button></div>
+    <div class="m-head"><div class="m-title">法币出金</div><button class="m-x" onclick="closeM('outModal')">✕</button></div>
     <div class="m-body">
-      <div class="stepper" id="wSteps"></div>
-      <div data-step="w1">
-        <div class="field">
-          <label class="flbl">来源余额</label>
-          <select class="fsel"><option>USD — 可用 1,234,567.00</option><option>HKD — 可用 3,456,789.00</option><option>SGD — 可用 234,567.00</option></select>
-        </div>
-        <div class="field">
-          <label class="flbl">目标账户 <span style="color:var(--t-tertiary);">（仅限本人同名账户）</span></label>
-          <select class="fsel"><option>Citibank · USD · ****1234 — XYZ Trading Ltd</option><option>JPMorgan · USD · ****5678 — XYZ Trading Ltd</option></select>
-        </div>
-        <div class="field">
-          <label class="flbl">提现金额</label>
-          <div class="amt-wrap"><input class="amt-input" type="text" value="100,000.00"><span class="amt-max">全部</span></div>
-          <div class="fhint">可用余额 USD 1,234,567.00</div>
-        </div>
-        <div class="hint-box"><span class="hb-ico">ⓘ</span><div>提现仅支持本人同名账户。如需打款给第三方（商户 / 合作方），请使用「下发」功能。</div></div>
-      </div>
-      <div data-step="w2">
-        <div class="countdown">报价 28 秒后过期 · <span class="cd-refresh">刷新</span></div>
-        <div class="qbox">
-          <div class="qrow"><span class="qlbl">提现金额</span><span class="qval">USD 100,000.00</span></div>
-          <div class="qrow"><span class="qlbl">手续费</span><span class="qval">− USD 50.00</span></div>
-          <div class="qrow"><span class="qlbl">实际到账</span><span class="qval hl">USD 99,950.00</span></div>
-          <div class="qrow"><span class="qlbl">到账方式</span><span class="qtext">本地转账（Local Transfer）</span></div>
-          <div class="qrow"><span class="qlbl">预计到账</span><span class="qtext" style="color:var(--success);">当日营业日内</span></div>
-        </div>
-      </div>
-      <div data-step="w3">
-        <div class="sumbox">
-          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat in/out · USD 余额</span></div>
-          <div class="sumrow"><span class="sumk">目标账户</span><span class="sumv">Citibank (US) · ****1234<span class="sub">XYZ Trading Ltd</span></span></div>
-          <div class="sumrow"><span class="sumk">提现金额</span><span class="sumv amt">USD 100,000.00</span></div>
-          <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 50.00</span></div>
-          <div class="sumrow"><span class="sumk">实际到账</span><span class="sumv amt hl">USD 99,950.00</span></div>
-          <div class="sumrow"><span class="sumk">到账方式</span><span class="sumv">本地转账</span></div>
-          <div class="sumrow"><span class="sumk">预计到账</span><span class="sumv">当日营业日内</span></div>
-        </div>
-      </div>
-      <div data-step="w4">
-        <div class="success-wrap"><div class="sico">✓</div><div class="stitle">提现已提交</div><div class="ssub">USD 100,000.00 → Citibank ****1234</div></div>
-        <div class="tracker">
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot done">✓</div><div class="tr-vline done"></div></div><div class="tr-content"><div class="tr-name">已提交</div><div class="tr-sub">今日 14:32</div></div></div>
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot act">●</div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">处理中</div><div class="tr-sub">进行中</div></div></div>
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">已发出</div><div class="tr-sub">待处理</div></div></div>
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div></div><div class="tr-content"><div class="tr-name">已到账</div><div class="tr-sub">预计当日</div></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="m-foot" id="wFoot"></div>
-  </div>
-</div>
-
-<!-- ============ PAYOUT MODAL ============ -->
-<div class="overlay" id="pModal">
-  <div class="modal">
-    <div class="m-head"><div class="m-title">下发</div><button class="m-x" onclick="closeM('pModal')">✕</button></div>
-    <div class="m-body">
-      <div class="stepper" id="pSteps"></div>
-      <div data-step="p1">
-        <div class="field">
-          <label class="flbl">代表商户 <span style="color:var(--t-tertiary);">（可选 · 无商户客户可留空，归组织自身）</span></label>
-          <select class="fsel" id="pMerchSel"><option>商户 A · Lazada-VN</option><option>商户 B · Shopee-TH（KYB 审核中，暂不可选）</option><option>商户 C · 自营电商</option><option>不指定商户（组织自身）</option></select>
-        </div>
-        <div class="field">
-          <label class="flbl">来源余额</label>
-          <select class="fsel"><option>USD — 可用 1,234,567.00</option><option>HKD — 可用 3,456,789.00</option><option>SGD — 可用 234,567.00</option></select>
-        </div>
-        <div class="field">
-          <label class="flbl">收款方（Beneficiary）<span style="color:var(--t-tertiary);">（仅显示该商户关联的收款方）</span></label>
-          <select class="fsel"><option>供应商 X 物流 · 越南银行 USD ****8821</option><option>商户 A 自有账户 · 越南银行 USD ****3401</option><option>卖家 SellerVN-001 · 需补充材料，暂不可选</option></select>
-        </div>
-        <div class="field">
-          <label class="flbl">下发金额</label>
-          <div class="amt-wrap"><input class="amt-input" type="text" value="50,000.00"><span class="amt-max">全部</span></div>
-        </div>
-        <div class="field">
-          <label class="flbl">款项用途 <span class="req">*</span></label>
-          <div class="pgrid">
-            <div class="popt sel" onclick="selPur(this)"><div class="rdot"></div>货款</div>
-            <div class="popt" onclick="selPur(this)"><div class="rdot"></div>服务费</div>
-            <div class="popt" onclick="selPur(this)"><div class="rdot"></div>佣金</div>
-            <div class="popt" onclick="selPur(this)"><div class="rdot"></div>退款</div>
-            <div class="popt" onclick="selPur(this)"><div class="rdot"></div>工资薪酬</div>
-            <div class="popt" onclick="selPur(this)"><div class="rdot"></div>其他</div>
+      <div class="stepper" id="outSteps"></div>
+      <div data-step="out1">
+        <div class="out-route-grid">
+          <div class="out-route sel" data-route="self" onclick="setOutRoute('self')">
+            <div class="out-route-top"><div class="out-route-dot"></div><div class="out-route-title">打给自己</div></div>
+            <div class="out-route-sub">选择组织同名账户，系统走提现链路。</div>
+            <div class="out-route-tag">Withdraw</div>
+          </div>
+          <div class="out-route" data-route="third" onclick="setOutRoute('third')">
+            <div class="out-route-top"><div class="out-route-dot"></div><div class="out-route-title">打给第三方</div></div>
+            <div class="out-route-sub">选择商户或合作方收款方，系统走下发链路。</div>
+            <div class="out-route-tag">Payout</div>
           </div>
         </div>
-        <div class="field" style="margin-bottom:0;">
-          <label class="flbl">备注 / 凭证（选填）</label>
-          <input class="finput" type="text" placeholder="如 Invoice #2024-001，大额或新收款方建议上传凭证">
+        <div class="out-auto" id="outRouteAuto"></div>
+        <div class="field">
+          <label class="flbl">来源余额</label>
+          <select class="fsel"><option>USD — 可用 1,234,567.00</option><option>HKD — 可用 3,456,789.00</option><option>SGD — 可用 234,567.00</option></select>
+        </div>
+        <div class="out-self-only">
+          <div class="field">
+            <label class="flbl">收款账户 <span style="color:var(--t-tertiary);">（仅限本人同名账户）</span></label>
+            <select class="fsel"><option>Citibank · USD · ****1234 — XYZ Trading Ltd</option><option>JPMorgan · USD · ****5678 — XYZ Trading Ltd</option></select>
+          </div>
+          <div class="field">
+            <label class="flbl">出金金额</label>
+            <div class="amt-wrap"><input class="amt-input" type="text" value="100,000.00"><span class="amt-max">全部</span></div>
+            <div class="fhint">可用余额 USD 1,234,567.00</div>
+          </div>
+          <div class="hint-box"><span class="hb-ico">ⓘ</span><div>同名账户由组织预先验证。提交后将作为提现记录落账。</div></div>
+        </div>
+        <div class="out-payout-only">
+          <div class="field">
+            <label class="flbl">代表商户 <span style="color:var(--t-tertiary);">（可选 · 无商户客户可留空，归组织自身）</span></label>
+            <select class="fsel"><option>商户 A · Lazada-VN</option><option>商户 B · Shopee-TH（KYB 审核中，暂不可选）</option><option>商户 C · 自营电商</option><option>不指定商户（组织自身）</option></select>
+          </div>
+          <div class="field">
+            <label class="flbl">收款方 <span style="color:var(--t-tertiary);">（Beneficiary）</span></label>
+            <select class="fsel"><option>供应商 X 物流 · 越南银行 USD ****8821</option><option>商户 A 自有账户 · 越南银行 USD ****3401</option><option>卖家 SellerVN-001 · 需补充材料，暂不可选</option></select>
+          </div>
+          <div class="field">
+            <label class="flbl">出金金额</label>
+            <div class="amt-wrap"><input class="amt-input" type="text" value="50,000.00"><span class="amt-max">全部</span></div>
+          </div>
+          <div class="field">
+            <label class="flbl">款项用途 <span class="req">*</span></label>
+            <div class="pgrid">
+              <div class="popt sel" onclick="selPur(this)"><div class="rdot"></div>货款</div>
+              <div class="popt" onclick="selPur(this)"><div class="rdot"></div>服务费</div>
+              <div class="popt" onclick="selPur(this)"><div class="rdot"></div>佣金</div>
+              <div class="popt" onclick="selPur(this)"><div class="rdot"></div>退款</div>
+              <div class="popt" onclick="selPur(this)"><div class="rdot"></div>工资薪酬</div>
+              <div class="popt" onclick="selPur(this)"><div class="rdot"></div>其他</div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label class="flbl">备注 / 凭证（选填）</label>
+            <input class="finput" type="text" placeholder="如 Invoice #2024-001，大额或新收款方建议上传凭证">
+          </div>
         </div>
       </div>
-      <div data-step="p2">
+      <div data-step="out2">
         <div class="countdown">报价 28 秒后过期 · <span class="cd-refresh">刷新</span></div>
-        <div class="qbox">
-          <div class="qrow"><span class="qlbl">下发金额</span><span class="qval">USD 50,000.00</span></div>
+        <div class="qbox out-self-only">
+          <div class="qrow"><span class="qlbl">出金金额</span><span class="qval">USD 100,000.00</span></div>
+          <div class="qrow"><span class="qlbl">手续费</span><span class="qval">− USD 50.00</span></div>
+          <div class="qrow"><span class="qlbl">实际到账</span><span class="qval hl">USD 99,950.00</span></div>
+          <div class="qrow"><span class="qlbl">系统路由</span><span class="qtext">提现 · 同名账户</span></div>
+          <div class="qrow"><span class="qlbl">预计到账</span><span class="qtext" style="color:var(--success);">当日营业日内</span></div>
+        </div>
+        <div class="qbox out-payout-only">
+          <div class="qrow"><span class="qlbl">出金金额</span><span class="qval">USD 50,000.00</span></div>
           <div class="qrow"><span class="qlbl">手续费</span><span class="qval">− USD 80.00</span></div>
           <div class="qrow"><span class="qlbl">收款方到账</span><span class="qval hl">USD 49,920.00</span></div>
-          <div class="qrow"><span class="qlbl">到账方式</span><span class="qtext">本地转账（USD）</span></div>
+          <div class="qrow"><span class="qlbl">系统路由</span><span class="qtext">下发 · Partner Payout</span></div>
           <div class="qrow"><span class="qlbl">预计到账</span><span class="qtext" style="color:var(--notice);">1 个工作日内</span></div>
         </div>
       </div>
-      <div data-step="p3">
-        <div class="sumbox">
+      <div data-step="out3">
+        <div class="sumbox out-self-only">
+          <div class="sumrow"><span class="sumk">系统路由</span><span class="sumv">提现（同名账户）</span></div>
+          <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat in/out · USD 余额</span></div>
+          <div class="sumrow"><span class="sumk">收款账户</span><span class="sumv">Citibank (US) · ****1234<span class="sub">XYZ Trading Ltd</span></span></div>
+          <div class="sumrow"><span class="sumk">出金金额</span><span class="sumv amt">USD 100,000.00</span></div>
+          <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 50.00</span></div>
+          <div class="sumrow"><span class="sumk">实际到账</span><span class="sumv amt hl">USD 99,950.00</span></div>
+          <div class="sumrow"><span class="sumk">预计到账</span><span class="sumv">当日营业日内</span></div>
+        </div>
+        <div class="sumbox out-payout-only">
+          <div class="sumrow"><span class="sumk">系统路由</span><span class="sumv">下发（Partner Payout）</span></div>
           <div class="sumrow"><span class="sumk">代表商户</span><span class="sumv">商户 A · Lazada-VN<span class="sub">用于对账归属（第一阶段法币不拆子账本）</span></span></div>
           <div class="sumrow"><span class="sumk">来源账户</span><span class="sumv">Cobo Fiat in/out · 组织 USD 法币池</span></div>
           <div class="sumrow"><span class="sumk">收款方</span><span class="sumv">供应商 X 物流<span class="sub">越南银行 · ****8821</span></span></div>
-          <div class="sumrow"><span class="sumk">下发金额</span><span class="sumv amt">USD 50,000.00</span></div>
+          <div class="sumrow"><span class="sumk">出金金额</span><span class="sumv amt">USD 50,000.00</span></div>
           <div class="sumrow"><span class="sumk">手续费</span><span class="sumv amt">USD 80.00</span></div>
           <div class="sumrow"><span class="sumk">收款方到账</span><span class="sumv amt hl">USD 49,920.00</span></div>
-          <div class="sumrow"><span class="sumk">到账方式</span><span class="sumv">本地转账</span></div>
           <div class="sumrow"><span class="sumk">款项用途</span><span class="sumv">货款</span></div>
           <div class="sumrow"><span class="sumk">预计到账</span><span class="sumv">1 个工作日内</span></div>
         </div>
-        <div class="warn-box"><span class="wb-ico">⚠️</span><div>末端法币交付由<strong>持牌合作方</strong>执行，实际到账时间以合作方处理结果为准。Cobo 将在每个状态更新时通知你。</div></div>
+        <div class="warn-box out-payout-only"><span class="wb-ico">⚠️</span><div>末端法币交付由<strong>持牌合作方</strong>执行，实际到账时间以合作方处理结果为准。Cobo 将在每个状态更新时通知你。</div></div>
       </div>
-      <div data-step="p4">
-        <div class="success-wrap"><div class="sico">✓</div><div class="stitle">下发已提交</div><div class="ssub">USD 50,000.00 · 商户 A → 供应商 X 物流</div></div>
-        <div class="tracker">
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot done">✓</div><div class="tr-vline done"></div></div><div class="tr-content"><div class="tr-name">已提交</div><div class="tr-sub">今日 14:45</div></div></div>
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot done">✓</div><div class="tr-vline done"></div></div><div class="tr-content"><div class="tr-name">合规审核</div><div class="tr-sub">已通过</div></div></div>
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot act">●</div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">Partner 处理中</div><div class="tr-sub partner">持牌合作方处理中 · 预计明日</div></div></div>
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">已发出</div><div class="tr-sub">待处理</div></div></div>
-          <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div></div><div class="tr-content"><div class="tr-name">已到账</div><div class="tr-sub">预计 1 个工作日内</div></div></div>
+      <div data-step="out4">
+        <div class="out-self-only">
+          <div class="success-wrap"><div class="sico">✓</div><div class="stitle">法币出金已提交</div><div class="ssub">系统路由：提现 · USD 100,000.00 → Citibank ****1234</div></div>
+          <div class="tracker">
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot done">✓</div><div class="tr-vline done"></div></div><div class="tr-content"><div class="tr-name">已提交</div><div class="tr-sub">今日 14:32</div></div></div>
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot act">●</div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">处理中</div><div class="tr-sub">进行中</div></div></div>
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">已发出</div><div class="tr-sub">待处理</div></div></div>
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div></div><div class="tr-content"><div class="tr-name">已到账</div><div class="tr-sub">预计当日</div></div></div>
+          </div>
+        </div>
+        <div class="out-payout-only">
+          <div class="success-wrap"><div class="sico">✓</div><div class="stitle">法币出金已提交</div><div class="ssub">系统路由：下发 · USD 50,000.00 · 商户 A → 供应商 X 物流</div></div>
+          <div class="tracker">
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot done">✓</div><div class="tr-vline done"></div></div><div class="tr-content"><div class="tr-name">已提交</div><div class="tr-sub">今日 14:45</div></div></div>
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot done">✓</div><div class="tr-vline done"></div></div><div class="tr-content"><div class="tr-name">合规审核</div><div class="tr-sub">已通过</div></div></div>
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot act">●</div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">Partner 处理中</div><div class="tr-sub partner">持牌合作方处理中 · 预计明日</div></div></div>
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div><div class="tr-vline"></div></div><div class="tr-content"><div class="tr-name">已发出</div><div class="tr-sub">待处理</div></div></div>
+            <div class="tr-item"><div class="tr-line-wrap"><div class="tr-dot pend"></div></div><div class="tr-content"><div class="tr-name">已到账</div><div class="tr-sub">预计 1 个工作日内</div></div></div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="m-foot" id="pFoot"></div>
+    <div class="m-foot" id="outFoot"></div>
   </div>
 </div>
 
@@ -1496,7 +1507,7 @@ body.embed .canvas{padding:24px;}
     <div class="m-body">
       <div style="text-align:center;padding:8px 0 16px;">
         <div style="width:56px;height:56px;border-radius:50%;background:var(--tg-blue-b);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;color:var(--tg-blue-t);">◑</div>
-        <div style="font-size:14px;color:var(--t-secondary);line-height:1.7;">该币种下还没有已验证的收款方。<br>请先在「收款方」中添加并完成验证，再发起下发。</div>
+        <div style="font-size:14px;color:var(--t-secondary);line-height:1.7;">该币种下还没有已验证的第三方收款方。<br>请先在「收款方」中添加并完成验证，再发起法币出金。</div>
       </div>
     </div>
     <div class="m-foot">
@@ -1579,9 +1590,9 @@ function switchAcc(t, el){
   document.querySelector(`[data-acc="${t}"]`).classList.add('active');
 }
 
-/* ===== modals (withdraw / payout) ===== */
-let wStep=1,pStep=1;
-const wL=['发起','报价','确认','完成'], pL=['发起','报价','确认','完成'];
+/* ===== modal (fiat outflow) ===== */
+let outStep=1,outRoute='self';
+const outL=['发起','报价','确认','完成'];
 function steps(cur,labels,id){
   let h='';
   for(let i=1;i<=4;i++){
@@ -1595,26 +1606,29 @@ function showStep(prefix,cur){
   document.querySelectorAll(`[data-step^="${prefix}"]`).forEach(e=>e.classList.remove('active'));
   const t=document.querySelector(`[data-step="${prefix}${cur}"]`); if(t)t.classList.add('active');
 }
-function wFoot(){
-  const f=document.getElementById('wFoot');
-  if(wStep===1)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="closeM('wModal')">取消</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="wStep++;renderW()">获取报价</button>`;
-  else if(wStep===2)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="wStep--;renderW()">上一步</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="wStep++;renderW()">确认 →</button>`;
-  else if(wStep===3)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="wStep--;renderW()">上一步</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="wStep++;renderW()">确认提现</button>`;
-  else f.innerHTML=`<button class="btn btn-lg btn-pri btn-full" onclick="closeM('wModal')">完成</button>`;
+function setOutRoute(route){
+  outRoute=route;
+  const modal=document.getElementById('outModal');
+  modal.dataset.route=route;
+  modal.querySelectorAll('.out-route').forEach(x=>x.classList.toggle('sel',x.dataset.route===route));
+  document.getElementById('outRouteAuto').innerHTML = route==='self'
+    ? '<span class="hb-ico">ⓘ</span><div>已识别为<strong>本人同名账户</strong>，提交后系统自动走提现链路，落到 Withdraw Records。</div>'
+    : '<span class="hb-ico">ⓘ</span><div>已识别为<strong>第三方收款方</strong>，提交后系统自动走下发链路，落到 Payout Records。</div>';
 }
-function pFoot(){
-  const f=document.getElementById('pFoot');
-  if(pStep===1)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="closeM('pModal')">取消</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="pStep++;renderP()">获取报价</button>`;
-  else if(pStep===2)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="pStep--;renderP()">上一步</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="pStep++;renderP()">确认 →</button>`;
-  else if(pStep===3)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="pStep--;renderP()">上一步</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="pStep++;renderP()">确认下发</button>`;
-  else f.innerHTML=`<button class="btn btn-lg btn-pri btn-full" onclick="closeM('pModal')">完成</button>`;
+function outFoot(){
+  const f=document.getElementById('outFoot');
+  if(outStep===1)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="closeM('outModal')">取消</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="outStep++;renderOut()">获取报价</button>`;
+  else if(outStep===2)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="outStep--;renderOut()">上一步</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="outStep++;renderOut()">确认 →</button>`;
+  else if(outStep===3)f.innerHTML=`<button class="btn btn-lg btn-ter btn-flex" onclick="outStep--;renderOut()">上一步</button><button class="btn btn-lg btn-pri" style="flex:2" onclick="outStep++;renderOut()">确认出金</button>`;
+  else f.innerHTML=`<button class="btn btn-lg btn-pri btn-full" onclick="closeM('outModal')">完成</button>`;
 }
-function renderW(){steps(wStep,wL,'wSteps');showStep('w',wStep);wFoot();}
-function renderP(){steps(pStep,pL,'pSteps');showStep('p',pStep);pFoot();}
-function openW(){wStep=1;renderW();document.getElementById('wModal').classList.add('open');}
-function openP(hasBen){
-  if(!hasBen){document.getElementById('noBenModal').classList.add('open');return;}
-  pStep=1;renderP();document.getElementById('pModal').classList.add('open');
+function renderOut(){steps(outStep,outL,'outSteps');showStep('out',outStep);setOutRoute(outRoute);outFoot();}
+function openOut(route='self',hasBen=true){
+  if(route==='third'&&!hasBen){document.getElementById('noBenModal').classList.add('open');return;}
+  outRoute=route;
+  outStep=1;
+  renderOut();
+  document.getElementById('outModal').classList.add('open');
 }
 function closeM(id){document.getElementById(id).classList.remove('open');}
 function selPur(el){document.querySelectorAll('.popt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
