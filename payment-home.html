@@ -450,32 +450,6 @@
     <!-- 业务流转 KPI 已并入上方账户快照右栏（今日业务） -->
 
 
-    <!-- ===== 待处理事项（合规/开通的落点） ===== -->
-    <section class="card req" style="margin-bottom:16px;">
-      <div class="sec-title">待处理事项 · Required Actions<span class="cnt">4 项</span></div>
-      <div class="card-sub" style="margin:-8px 0 12px;">仅显示你有权限处理的事项（按当前用户角色过滤）</div>
-      <div class="req-row">
-        <span class="rdot rdot-notice"></span>
-        <span class="rtext">2 个商户待 KYB 审核 <span class="rsub">· 通过后这些商户方可收款</span></span>
-        <button class="btn btn-secondary btn-sm" onclick="showFiat('merchants',navForFiat('merchants'))">去审核</button>
-      </div>
-      <div class="req-row">
-        <span class="rdot rdot-notice"></span>
-        <span class="rtext">1 个收款方待验证 <span class="rsub">· 验证后方可向其下发</span></span>
-        <button class="btn btn-secondary btn-sm" onclick="showFiat('beneficiaries',navForFiat('beneficiaries'))">去验证</button>
-      </div>
-      <div class="req-row">
-        <span class="rdot rdot-notice"></span>
-        <span class="rtext">Bulk Send 尚未完成 Payout 设置 <span class="rsub">· 完成后可批量下发</span></span>
-        <button class="btn btn-secondary btn-sm" onclick="openCryptoPayout()">去设置</button>
-      </div>
-      <div class="req-row">
-        <span class="rdot rdot-alert"></span>
-        <span class="rtext">1 笔下发失败 · 待风控复核 <span class="rsub">· 末端合作伙伴退回，需补充材料</span></span>
-        <button class="btn btn-secondary btn-sm" onclick="showFiat('precords',navForFiat('precords'))">去处理</button>
-      </div>
-    </section>
-
     <!-- ===== 账户余额（操作视角：按形态×归属拆分，含小计，对得上总额） ===== -->
     <section class="card" id="balancesSection" style="margin-bottom:16px;">
       <div class="bal-head">
@@ -576,6 +550,32 @@
         </div>
       </div>
       <div class="phase-note"><span>ⓘ</span><span>目前法币按总额展示、不按商户拆分；<b style="color:var(--text-primary);">后续将按商户拆分法币余额</b>。</span></div>
+    </section>
+
+    <!-- ===== 待处理事项（合规/开通的落点） ===== -->
+    <section class="card req" style="margin-bottom:16px;">
+      <div class="sec-title">待处理事项 · Required Actions<span class="cnt">4 项</span></div>
+      <div class="card-sub" style="margin:-8px 0 12px;">仅显示你有权限处理的事项（按当前用户角色过滤）</div>
+      <div class="req-row">
+        <span class="rdot rdot-notice"></span>
+        <span class="rtext">2 个商户待 KYB 审核 <span class="rsub">· 通过后这些商户方可收款</span></span>
+        <button class="btn btn-secondary btn-sm" onclick="showFiat('merchants',navForFiat('merchants'))">去审核</button>
+      </div>
+      <div class="req-row">
+        <span class="rdot rdot-notice"></span>
+        <span class="rtext">1 个收款方待验证 <span class="rsub">· 验证后方可向其下发</span></span>
+        <button class="btn btn-secondary btn-sm" onclick="showFiat('beneficiaries',navForFiat('beneficiaries'))">去验证</button>
+      </div>
+      <div class="req-row">
+        <span class="rdot rdot-notice"></span>
+        <span class="rtext">Bulk Send 尚未完成 Payout 设置 <span class="rsub">· 完成后可批量下发</span></span>
+        <button class="btn btn-secondary btn-sm" onclick="openCryptoPayout()">去设置</button>
+      </div>
+      <div class="req-row">
+        <span class="rdot rdot-alert"></span>
+        <span class="rtext">1 笔下发失败 · 待风控复核 <span class="rsub">· 末端合作伙伴退回，需补充材料</span></span>
+        <button class="btn btn-secondary btn-sm" onclick="showFiat('precords',navForFiat('precords'))">去处理</button>
+      </div>
     </section>
 
     <!-- ===== 近期活动（整宽；业务流小图已撤出工作台，归入空状态/未开通引导） ===== -->
